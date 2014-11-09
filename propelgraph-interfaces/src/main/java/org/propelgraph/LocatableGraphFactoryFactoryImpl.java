@@ -62,15 +62,15 @@ public class LocatableGraphFactoryFactoryImpl {
 	 * 
 	 * @author ccjason (11/9/2014)
 	 * 
-	 * @param the parameter string preceding the value of interest. 
-	 *             For example, if one wants the "hostname"
-	 *             parameter of a url, the value passed here should
-	 *             be "&hostname=";
+	 * @param paramprefix   the parameter string preceding the value
+	 *             of interest. For example, if one wants the
+	 *             "hostname" parameter of a url, the value passed
+	 *             here should be "&hostname=";
 	 * @param urlstring
 	 * 
 	 * @return String 
 	 *  
-	 * @throw RuntimeException thrown if the parameter was not 
+	 * @throws RuntimeException thrown if the parameter was not 
 	 *        found.
 	 */
 	public static final String parseForURLParameter( String paramprefix, String urlstring ) {
@@ -181,7 +181,8 @@ public class LocatableGraphFactoryFactoryImpl {
 	 * some graph implementations that have not yet begun to support 
 	 * the LocatableGraph interface. 
 	 *  
-	 * See the {@link LocatableGraphFactory.open() method} for 
+	 * See the {@link 
+	 * LocatableGraphFactory#open(String,String,String)} method for 
 	 * information about the semantics of this method. 
 	 * 
 	 * @author ccjason (11/9/2014)
@@ -204,7 +205,8 @@ public class LocatableGraphFactoryFactoryImpl {
 	 * Graph implementations that don't yet support the 
 	 * LocatableGraph interface. 
 	 * 
-	 * See the {@link LocatableGraphFactory.open() method} for 
+	 * See the {@link 
+	 * LocatableGraphFactory#open(String,String,String)} method for 
 	 * information about the semantics of this method. 
 	 * 
 	 * @author ccjason (11/9/2014)

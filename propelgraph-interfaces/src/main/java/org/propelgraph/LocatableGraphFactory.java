@@ -102,7 +102,7 @@ public interface LocatableGraphFactory {
 	 *      	  is thrown.
 	 * @param fmode  the mode the graph is in once it is opened. See
 	 *      	 the FMODE_* constants of this interface.
-	 * @return
+	 * @return the opened graph
 	 */
 	Graph open(String urlPath, String faction, String fmode) throws AlreadyExistsException, NotFoundException, UnsupportedFActionException;
 	

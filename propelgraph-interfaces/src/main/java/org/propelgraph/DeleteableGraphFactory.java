@@ -26,10 +26,10 @@ public interface DeleteableGraphFactory {
 	 * Subsequent attempts to open that graph should result in a 
 	 * totally empty graph. 
 	 * 
-	 * @param urlPath
-	 * @return 
+	 * @param urlstring
+	 *  
 	 * @see LocatableGraphFactory 
 	 */
-	void delete(String urlPath);
+	void delete(String urlstring);
 	
 }
