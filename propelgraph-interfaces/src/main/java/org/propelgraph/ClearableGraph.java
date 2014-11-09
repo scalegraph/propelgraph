@@ -14,9 +14,18 @@ import java.io.IOException;
 
 import com.tinkerpop.blueprints.Graph;
 
+/**
+ * This interface exists to provide a generic interface for a 
+ * method to quickly clear out the vertices and edges of a graph
+ * without deleting the graph.   It can be useful for unit 
+ * testing and regression testing. 
+ * 
+ * @author ccjason (11/9/2014)
+ */
 public interface ClearableGraph extends Graph {
     /**                                                                                                                                                   
-     * Clear out all edges and vertices of graph.  Meta info might be retained.                                                                           
+     * Quickly remove the edges and vertices of the graph.  Meta 
+     * info will be retained. 
      *                                                                                                                                                    
      * @throws IOException                                                                                                                                
      */
