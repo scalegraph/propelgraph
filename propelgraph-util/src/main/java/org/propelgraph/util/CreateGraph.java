@@ -20,7 +20,7 @@ import org.propelgraph.ClearableGraph;
 import org.propelgraph.LocatableGraphFactoryFactoryImpl;
 import org.propelgraph.LocatableGraphFactory;
 import org.propelgraph.DeleteableGraphFactory;
-import org.propelgraph.PreloadableGraph;
+//import org.propelgraph.PreloadableGraph;
 import org.propelgraph.AlreadyExistsException;
 import org.propelgraph.NotFoundException;
 import org.propelgraph.UnsupportedFActionException;
@@ -229,7 +229,7 @@ public class CreateGraph {
 	}
 
 	if (GRAPH_GBASE.equals(graphtype)) {
-	    ((PreloadableGraph)g).preLoad();
+	    //((PreloadableGraph)g).preLoad();
 	    if (null!=mapParams.get("---cleargraph")) {
 		((ClearableGraph)g).clear();
 		mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_EMPTY);
