@@ -49,4 +49,4 @@ propelgraph-util - [javadoc](http://scalegraph.github.io/propelgraph/propelgraph
 
 Most of PropelGraph is interfaces and helper functions.  That tends not to demo
 easily, but you can still easily experiment with PropelGraph by following the
-instructions in the [propelgraph-gremlin section](fixthislink) of this project.
+instructions in the [propelgraph-gremlin section](https://github.com/scalegraph/propelgraph/tree/master/propelgraph-gremlin) of this project.
