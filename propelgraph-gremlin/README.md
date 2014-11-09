@@ -6,16 +6,6 @@ support and the CreateGraph class to
 make it easier to support a variety of graph implementations.
 
 
-Instructions
-============
-
-to be added here
-
-Uncomment the systemg dependency in pom.xml if you'd like to try out IBM System-G.
-
-Uncomment the neo4j dependency in pom.xml but be warned that Neo4j uses an
-Affero license so you might want to avoid using it.
-
 
 Prereqs
 =========
@@ -36,7 +26,8 @@ cd propelgraph-master/propelgraph-gremlin
 
 If you'd like to try Neo4j or IBM's NativeStore or NativeMem implementations, 
 uncomment the appropriate part of the pom.xml file with your favorite text
-editor.  Then...
+editor.  (Warning: Neo4j uses the Affero license.  PLease understand the 
+implications of that before using our sample Neo4j interface.)  Then...
 
 ```
 ./makepackage.sh
