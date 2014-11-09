@@ -17,16 +17,31 @@ import com.tinkerpop.blueprints.Graph;
 /**                                                                                                                                                           
  * This interface is generally for classes that have methods                                                                                                  
  * that are particularly fast at loading CSV files.  In the                                                                                                   
- * absense of those methods, one can use the generic methods                                                                                                  
- * provided by the SGTestUtils repo  LoadCSV class.                                                                                                           
+ * absense of those methods, one can use the generic helper 
+ * methods provided by propelgraph-utils. 
+ *  
+ * The CSV format that is preferred is the format that is used 
+ * by LibreOffice's CSV support's default setting.  It treats 
+ * spaces as significant.  Adjacent commas as a value with zero
+ * length. Double quotes can be used to enclose values that 
+ * contain commas. To put double quotes inside the quoted area, 
+ * a pair of quotes are used. (Ex. ,"The president said, ""Ich 
+ * bin ein Berliner"" when he visited Berlin",)  Backward 
+ * leaning slashes do not have special meaning.
  *                                                                                                                                                            
- * @author ccjason (8/19/2014)                                                                                                                                
+ * @author ccjason (8/19/2014) 
+ * @see org.propelgraph.util.LoadCSV 
  */
 public interface CSVFileLoadingGraph extends Graph {
 
     /**                                                                                                                                                   
-     * Populates a graph from a CSV Vertex File.  It does not assume                                                                                      
-     * the graph is initially empty.                                                                                                                      
+     * populates a graph from a CSV Vertex File.  It does not assume
+     * the graph is initially empty. 
+     *  
+     * A CSV vertex file is a CSV file where the first line 
+     * specifies labels for the columns and each of the remaining 
+     * rows specifies a vertex external id in the first column and 
+     * vertex properties in the remaining columns. 
      *                                                                                                                                                    
      * @author ccjason (8/19/2014)                                                                                                                        
      *                                                                                                                                                    
@@ -37,9 +52,15 @@ public interface CSVFileLoadingGraph extends Graph {
 
 
     /**                                                                                                                                                   
-     * Populates a graph from a CSV Edge File.  It does not assume                                                                                        
+     * populates a graph from a CSV Edge File.  It does not assume  
      * the graph is empty, but it will create vertices if needed and                                                                                      
      * not present.                                                                                                                                       
+     *                                                                                                                                                    
+     * A CSV edge file is a CSV file where the first line specifies
+     * labels for the columns and each of the remaining rows 
+     * specifies an edge.  Each of those rows specifies in order the
+     * source vertex external id, the target vertex external id, the
+     * edge label, and each of the edge properties.
      *                                                                                                                                                    
      * @author ccjason (8/19/2014)                                                                                                                        
      *                                                                                                                                                    

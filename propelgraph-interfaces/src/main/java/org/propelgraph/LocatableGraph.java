@@ -13,20 +13,28 @@ package org.propelgraph;
 import com.tinkerpop.blueprints.Graph;
 
 /**
- * A graph that can be reconstituted from a graph url.   
+ * This interface is used by Graph classes that support 
+ * a LocatableGraphFactory. 
+ *  
+ * Of note, this interface need not be supported by a Graph 
+ * class to be supported by a LocatableGraphFactory class. As 
+ * part of the propelgraph-neo4j subproject we provide an 
+ * example of one can work around the lack of LocatableGraph 
+ * awareness in a Graph implemenation.  This is done with 
+ * cooperation of the {@link LocatableGraphFactoryFactoryImpl} 
+ * class. 
  * 
  * @author drewvale
  *
  */
 public interface LocatableGraph extends Graph {
-
-	
 	
 	/**
-	 * This method must return the classname of a class that can be used to reconstruct the graph object when
-	 * given the value returned by getURLPath().
+	 * returns the classname of a class that can be used as a 
+	 * LocatableGraphFactory for this Graph.
 	 * 
-	 * @return  The name of a class that implements the xxxx interface.
+	 * @return  The name of a class that implements 
+	 *          LocatableGraphFactory for this Graph.
 	 */
 	String getFactoryClassName();
 	

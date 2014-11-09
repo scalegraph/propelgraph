@@ -11,10 +11,12 @@
 package org.propelgraph;
 
 /**
- * Exception that indicates that something was not found.
+ * Exception that the passed faction parameter is not supported 
+ * or not supported for this graph url.
  * 
  * @author drewvale
- *
+ *  
+ * @see LocatableGraphFactory 
  */
 public class UnsupportedFActionException extends Exception {
 }

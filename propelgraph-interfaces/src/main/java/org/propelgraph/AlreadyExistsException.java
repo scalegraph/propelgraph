@@ -15,7 +15,8 @@ package org.propelgraph;
  * Exception that indicates that something already exists.
  * 
  * @author drewvale
- *
+ *  
+ * @see LocatableGraphFactory 
  */
 public class AlreadyExistsException extends Exception {
 }

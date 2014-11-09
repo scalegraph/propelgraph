@@ -15,11 +15,31 @@ import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import org.propelgraph.AlreadyExistsException;
 import org.propelgraph.NotFoundException;
 
+/**
+ * This class implements most of the glue needed to implement
+ * the LocatableGraphFactory support. 
+ * 
+ * @author ccjason (11/9/2014)
+ */
 public class LocatableGraphFactoryFactoryImpl {
 	static final String URLPREFIX = LocatableGraphFactory.SCHEME_PGGRAPH+":";
 	static final String URLPREFIXD = LocatableGraphDirectory.SCHEME_PGGRAPHDIR+":";
 	static final LocatableGraphFactoryFactoryImpl lgffi = new LocatableGraphFactoryFactoryImpl();
 
+	/**
+	 * the value of the specified optional parameter of the 
+	 * specified url. Unlike the other method with this name, this 
+	 * one lets the caller pass in a default value to be returned if 
+	 * the parameter was not found. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @param strP 
+	 * @param urlPath 
+	 * @param defaultval 
+	 * 
+	 * @return String 
+	 */
         public static final String parseForURLParameter( String strP, String urlPath, String defaultval ) {
 		//String strP = "&hostname=";
 		int idx0 = urlPath.indexOf('?');  if (idx0<0) return null;
@@ -35,15 +55,33 @@ public class LocatableGraphFactoryFactoryImpl {
 		return retval;
 	}
 	
-	public static final String parseForURLParameter( String strP, String urlPath ) {
+	/**
+	 * returns the value for the specified parameter encoded in the 
+	 * specified url string.  This helper method is useful to 
+	 * implementations of LocatableGraphFactory. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @param the parameter string preceding the value of interest. 
+	 *             For example, if one wants the "hostname"
+	 *             parameter of a url, the value passed here should
+	 *             be "&hostname=";
+	 * @param urlstring
+	 * 
+	 * @return String 
+	 *  
+	 * @throw RuntimeException thrown if the parameter was not 
+	 *        found.
+	 */
+	public static final String parseForURLParameter( String paramprefix, String urlstring ) {
 		//String strP = "&hostname=";
-		int idx0 = urlPath.indexOf('?');  if (idx0<0) return null;
-		int idx1 = urlPath.indexOf(strP,idx0);
+		int idx0 = urlstring.indexOf('?');  if (idx0<0) return null;
+		int idx1 = urlstring.indexOf(paramprefix,idx0);
 		if (idx1<0) throw new RuntimeException("invalid url");
-		int idx2 = idx1+(strP.length());
-		int idx3 = urlPath.indexOf('&',idx2);
-		if (idx3<0) idx3 = urlPath.length();
-		String retval = urlPath.substring(idx1+(strP.length()), idx3);
+		int idx2 = idx1+(paramprefix.length());
+		int idx3 = urlstring.indexOf('&',idx2);
+		if (idx3<0) idx3 = urlstring.length();
+		String retval = urlstring.substring(idx1+(paramprefix.length()), idx3);
 		if ("null".equals(retval)) {
 			retval = null;
 		}
@@ -66,8 +104,17 @@ public class LocatableGraphFactoryFactoryImpl {
 		return lgf;
 	}
 	
-	
-	public static LocatableGraphFactory getGraphFactory(Graph graph ) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	/**
+	 * returns the graph factory that could be used to reconstruct 
+	 * this graph if passed the proper graph url.   
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @param graph 
+	 * 
+	 * @return LocatableGraphFactory 
+	 */
+	protected static LocatableGraphFactory getGraphFactory(Graph graph ) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		//if (null==graphurl) throw new NullPointerException();
 		String classname; 
 		if (graph instanceof LocatableGraph) {
@@ -92,6 +139,16 @@ public class LocatableGraphFactoryFactoryImpl {
 		return lgf;
 	}
 
+	/**
+	 * returns a LocatableGraphFactory that is capable of 
+	 * rehydrating the graph specified by the graph url. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @param graphurl 
+	 * 
+	 * @return LocatableGraphFactory 
+	 */
 	public static LocatableGraphFactory getGraphFactory(String graphurl ) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		//if (null==graphurl) throw new NullPointerException();
 		
@@ -118,13 +175,44 @@ public class LocatableGraphFactoryFactoryImpl {
 		return lgf;
 	}
 	
+	/**
+	 * Returns a hydrated graph given the graph url specified. This 
+	 * helper method exists because we want to support graph urls on 
+	 * some graph implementations that have not yet begun to support 
+	 * the LocatableGraph interface. 
+	 *  
+	 * See the {@link LocatableGraphFactory.open() method} for 
+	 * information about the semantics of this method. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @param graphurl 
+	 * @param faction 
+	 * @param fmode 
+	 * 
+	 * @return Graph 
+	 */
 	public static Graph openGraph( String graphurl, String faction, String fmode) throws InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		LocatableGraphFactory lgf = getGraphFactory(graphurl);
 		Graph retval = lgf.open(graphurl,faction,fmode);
 		return retval;
 	}
 	
-	
+	/**
+	 * the url string that can be used to later rehyrate this graph. 
+	 * This is a helper method that attempts to handle even a few 
+	 * Graph implementations that don't yet support the 
+	 * LocatableGraph interface. 
+	 * 
+	 * See the {@link LocatableGraphFactory.open() method} for 
+	 * information about the semantics of this method. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @param graph 
+	 * 
+	 * @return String 
+	 */
 	public static String getGraphURL(Graph graph) {
 		// note: this is implemented in a way that it doesn't need to access any graph classes to compile.
 		String strNameOfGraphFactoryClass = null;
@@ -152,7 +240,16 @@ public class LocatableGraphFactoryFactoryImpl {
 		return retval;
 	}
 	
-
+	/**
+	 * returns a directory object described by the provided graph 
+	 * directory url. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @param graphdirurl 
+	 * 
+	 * @return LocatableGraphDirectory 
+	 */
 	public static LocatableGraphDirectory getGraphDirectory(String graphdirurl ) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		//if (null==graphdirurl) throw new NullPointerException();
 		

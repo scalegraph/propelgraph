@@ -11,20 +11,24 @@
 package org.propelgraph;
 
 /**
- * Implementations of this interface and the LocatableGraphFactory interface work together to delete graphs
- * objects.
+ * Implementations of this interface and the {@link 
+ * LocatableGraphFactory} interface work together to delete 
+ * graphs objects. Usually instances of this interface are also 
+ * an instance of LocatableGraphFactory. 
  * 
- * @author drewvale
+ * @author ccjason
  *
  */
 public interface DeleteableGraphFactory {
 
 	/**
-	 * This method to delete a LocatableGraph object indicated by the provided urlPath. Usually this interface 
-	 * is an object that is also a LocatableGraphFactory.
+	 * deletes the graph indicated by the provided urlPath. 
+	 * Subsequent attempts to open that graph should result in a 
+	 * totally empty graph. 
 	 * 
 	 * @param urlPath
-	 * @return
+	 * @return 
+	 * @see LocatableGraphFactory 
 	 */
 	void delete(String urlPath);
 	

@@ -14,7 +14,8 @@ package org.propelgraph;
  * Exception that indicates that something was not found.
  * 
  * @author drewvale
- *
+ *  
+ * @see LocatableGraphFactory 
  */
 public class NotFoundException extends Exception {
 }

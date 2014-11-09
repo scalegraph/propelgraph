@@ -21,26 +21,18 @@ import com.tinkerpop.blueprints.Vertex;
  *  
  * @author ccjason (11/7/2014)
  */
-public interface CollaborativeFilterSupport {
-
-    
-    public static final String supmethod_simpleCF = "method:CollaborativeFilterSupport:simpleCF";
+public interface CollaborativeFilterSupport extends OptionalMethodVerifier {
 
     /**
-     * This method allows the caller to check if a particular 
-     * collaborative filter method is supported. The caller should 
-     * pass one of the constants listed above.  For the sake of 
-     * runtime performance, the implementations of this method are 
-     * permitted to simply do a pointer match on the methodid 
-     * parameter rather than a string match.
+     * a constant that specifies the simpleCF method.  It can be 
+     * passed to the supportedMethod (see {@link 
+     * OptionalMethodVerifier} method to check if the simpleCF 
+     * method really has been implemented for an instance of this 
+     * interface.
      * 
-     * @author ccjason (11/7/2014)
-     * 
-     * @param methodid 
-     * 
-     * @return boolean 
+     * @author ccjason (11/9/2014)
      */
-    public boolean supportedMethod(String methodid );
+    public static final String supmethod_simpleCF = "method:CollaborativeFilterSupport:simpleCF";
 
     /**
      * This method implements a very simple form of collaborative 

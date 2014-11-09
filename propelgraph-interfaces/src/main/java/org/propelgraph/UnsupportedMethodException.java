@@ -11,10 +11,12 @@
 package org.propelgraph;
 
 /**
- * Exception that indicates that something was not found.
+ * Exception that indicates that the object does not support the
+ * specified method.
  * 
  * @author drewvale
- *
+ *  
+ * @see OptionalMethodVerifier 
  */
 public class UnsupportedMethodException extends RuntimeException {
 }

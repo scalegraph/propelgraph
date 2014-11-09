@@ -20,77 +20,112 @@ import com.tinkerpop.blueprints.Graph;
  *
  */
 public interface LocatableGraphFactory {
+	/**
+	 * the scheme of the graph url.  All graph urls should start 
+	 * with this value. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 */
 	static final String  SCHEME_PGGRAPH = "pggraph";
 
 
 	/**
-	 * If graph doesn't exist, die.  Otherwise open it.
+	 * This is the value that should be passed to the open method 
+	 * for a non-persistant graph.  In all situations a new graph is
+	 * created. 
 	 */
 	static final String FACTION_NEW_NEW = "nn"; 
 
 	/**
-	 * If graph doesn't exist, die.  Otherwise open it.
+	 * This is the value that should be passed to the open method 
+	 * for a persistant graph to indicate if the graph doesn't
+	 * exist, die.  Otherwise open it. 
 	 */
 	static final String FACTION_DIE_OPEN = "do"; 
 
 	/**
-	 * If graph doesn't exist, create it. Otherwise empty it.
+	 * This is the value that should be passed to the open method 
+	 * for a persistant graph to indicate if the graph doesn't 
+	 * exist, create it. Otherwise empty it. 
 	 */
 	static final String FACTION_CREATE_EMPTY = "ce";
 
 	/**
-	 * If graph does not exist, create it.  Otherwise open it.
+	 * This is the value that should be passed to the open method 
+	 * for a persistant graph to indicate if the graph doesn't 
+	 * exist, create it.  Otherwise open it.
 	 */
 	static final String FACTION_CREATE_OPEN = "co"; 
 
 	/**
-	 * If graph does not exist, create it.  Otherwise die.
+	 * This is the value that should be passed to the open method 
+	 * for a persistant graph to indicate if the graph doesn't 
+	 * exist, create it.  Otherwise die. 
 	 */
 	static final String FACTION_CREATE_DIE = "cd";  
 
 	/**
-	 * Open graph for read access. 
+	 * This is the value that should be passed to the open method to
+	 * specify the graph should be opened in read-only mode.
 	 */
 	static final String FMODE_READ = "r"; 
 
 	/**
-	 * Open graph for write access.
+	 * This is the value that should be passed to the open method to
+	 * specify the graph should be opened in read-write mode. 
 	 */
 	static final String FMODE_WRITE = "rw"; 
 
 	/**
-	 * Open graph for read-add access.
-	 */
+	* This is the value that should be passed to the open method to
+	* specify the graph should be opened in read-write mode when new 
+	* vertices and edges may be added, but none may be removed.
+	*  
+	* Design: we need to more clearly demonstrate the need for this 
+	* mode and the semantics expected.  Until this is done, 
+	* this mode is deprecated. 
+	*  
+	* @deprecated 
+	*/
 	static final String FMODE_ADD = "a";
 
 
 	/**
-	 * This method creates a LocatableGraph object indicated by the provided urlPath.
+	 * This method hydrates the Graph referenced by the provided
+	 * urlPath. 
 	 * 
 	 * @param urlPath
-	 * @param faction - The action to take if the graph doesn't 
-	 *      	  exist or does exist.  See the FACTION
-	 *      	  constants of this interface.  If the action is
-	 *      	  "die", then a AlreadyExistsException or
-	 *      	  NotFoundException is thrown.
-	 * @param fmode  - The mode the graph is in once it is opened. 
-	 *      	 See the FMODE_* constants of this interface.
+	 * @param faction the action to take if the graph doesn't exist
+	 *      	  or does exist.  See the FACTION_* constants of
+	 *      	  this interface.  If the action is "die", then
+	 *      	  a AlreadyExistsException or NotFoundException
+	 *      	  is thrown.
+	 * @param fmode  the mode the graph is in once it is opened. See
+	 *      	 the FMODE_* constants of this interface.
 	 * @return
 	 */
 	Graph open(String urlPath, String faction, String fmode) throws AlreadyExistsException, NotFoundException, UnsupportedFActionException;
 	
 	/**
-	 *  This method returns a string that this class would like passed to it's create method in order
-	 *  for the caller to later reinstantiate the graph object.
+	 *  returns a string that could be passed to this to the open
+	 *  method to rehydrate the graph.  If the graph is a
+	 *  non-persistant graph, then the url species that the open
+	 *  method would return a newly constructed empty graph.
 	 *   
-	 *  The calling code needs the returned string to be in a format that will allow the calling code to do 
-	 *  an operation like the following to form a url:
+	 *  Implementation Note: The returned value should be in the
+	 *  following form in order for our other classes to be able to
+	 *  parse and process it:
+	 *  
+	 *  <pre>
+	 *  {@code
+	 *  url = "pggraph:"+factoryclassname+urlpath+"?extraparam1=val1&extraparam2=val2"
+	 *  }
+	 *  </pre>
 	 * 
-	 * url = "pggraph:"+classname+urlpath+"?extraparam1=val1&extraparam2=val2"
+	 * where urlpath includes a leading / character to denote the 
+	 * end of the classname.. 
 	 * 
-	 * where urlpath includes a leading /.
-	 * 
-	 * @return  The returned url string must comply with the example above.
+	 * @return  a url string
 	 */
 	String getGraphURL(Graph graph);
 }

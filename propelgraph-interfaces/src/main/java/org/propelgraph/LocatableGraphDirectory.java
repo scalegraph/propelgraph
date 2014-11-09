@@ -13,8 +13,12 @@ package org.propelgraph;
 import java.util.List;
 
 /**
- * Implementations of this interface and the LocatableGraph interface work together to help persist and rehydrate graph
- * objects.  This class focuses on collections of graphs.
+ * Implementations of this interface and the LocatableGraph 
+ * interface work together to help persist and rehydrate graph 
+ * objects.  This class implements the concept of a group of 
+ * graphs called a "directory".  This concept can be useful in 
+ * user interfaces that want to list a set of graphs that the 
+ * user can act on. 
  * 
  * @author drewvale
  *
@@ -23,19 +27,31 @@ public interface LocatableGraphDirectory {
 	static final String  SCHEME_PGGRAPHDIR = "pggraphdir";
 
 	/**
-	 * This method initializes the newly created object.
+	 * initializes the newly created directory object.
 	 * 
 	 * These classes will be created via the default constructor and need to be initialized.  
-	 * This is the method that will be called to do that.
+	 * This is the method that will be called to do that. 
+	 *  
+	 * Design: we are still refining this interface.  Changes to 
+	 * this interface are likely. 
 	 * 
-	 * @param url
+	 * @param url that specifies the location of the directory of 
+	 *            interest.
 	 */
 	public void init(String url); 
 	
 	/**
-	 * This method returns a list of urls for locatable graphs
 	 * 
 	 * @return
+	 */
+	/**
+	 * returns a list of url records for locatable Graphs in this
+	 * directory. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @return List<LocatableGraphDirectoryRecord> a list of url 
+	 *         records
 	 */
 	public List<LocatableGraphDirectoryRecord> getRecords();
 	

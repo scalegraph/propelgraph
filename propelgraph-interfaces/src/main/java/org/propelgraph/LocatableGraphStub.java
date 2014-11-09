@@ -22,13 +22,15 @@ import org.propelgraph.NotFoundException;
 /**
  * This is an empty class that can be used as a place holder of 
  * a graph that might be too expensive to instatiate until one 
- * is certain it is needed.  All Graph methods are noops or 
- * return null;   getActualGraph() is the only implemented 
- * method besides the constructor. -- This class is useful for 
- * passing in a graph to an interface that doesn't really use 
- * the graph until later.  This class is not a WrapperGraph  
- * because a wrapper class actually delegates its methods. This 
- * class does not. All methods are noops or return null.
+ * is certain it is needed.  
+ *  
+ * All Graph methods of this class are noops or return null;
+ * getActualGraph() is the only implemented method besides the 
+ * constructor. -- This class is useful for passing in a graph 
+ * to an interface that doesn't really use the graph until 
+ * later.  This class is not a WrapperGraph because a wrapper 
+ * class actually delegates its methods. This class does not. 
+ * All methods are noops or return null. 
  * 
  * @author drewvale (12/25/2014)
  */
@@ -39,9 +41,9 @@ public class LocatableGraphStub implements Graph {
     String fmode;
 
     /**
-     * This is a very low cost constructor.  One simply passes in 
-     * the locatablegraph url that can be used later to create the 
-     * actual graph.   
+     * construct the object.  This is a very low cost constructor. 
+     * One simply passes in the locatablegraph url that can be used 
+     * later to create the actual graph. 
      * 
      * @author drewvale (12/25/2014)
      * 
@@ -54,6 +56,23 @@ public class LocatableGraphStub implements Graph {
 	this.fmode = fmode;
     }
 
+    /**
+     * This returns an actual graph behind the stub.  It doesn't 
+     * actually remember if has already created the graph.  It's up 
+     * to the caller to cache the value returned here. 
+     *  
+     * Design: We need to consider if this class is still needed and
+     * if the semantics of this method are correct.  It is possible
+     * that this class will go away or the semantics of this method 
+     * will change.   Until this is resolved, this method should be 
+     * considered deprecated. 
+     *  
+     * @deprecated 
+     * 
+     * @author ccjason (11/9/2014)
+     * 
+     * @return Graph 
+     */
     public Graph getActualGraph() throws InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
         Graph graph = LocatableGraphFactoryFactoryImpl.openGraph(url,faction,fmode);
         return graph;

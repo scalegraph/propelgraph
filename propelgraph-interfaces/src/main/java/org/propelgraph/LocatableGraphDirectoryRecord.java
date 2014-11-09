@@ -10,7 +10,35 @@
  */
 package org.propelgraph;
 
+/**
+ * This interface works in conjuction with the {@link 
+ * LocatableGraphDirectory} interface to provide a way for 
+ * callers to get a list of graphs in a given directory and 
+ * present a user interface describing the directory. 
+ *  
+ * This interface represents the directory information for a 
+ * single Graph. 
+ * 
+ * @author ccjason (11/9/2014)
+ */
 public interface LocatableGraphDirectoryRecord {
+	/**
+	 * returns the url string that can be used to rehydrate the 
+	 * given graph. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @return String 
+	 */
 	public String getURL();
+
+	/**
+	 * returns a name of the given graph that is suitable for a user 
+	 * interface listing a directory of graphs. 
+	 * 
+	 * @author ccjason (11/9/2014)
+	 * 
+	 * @return String 
+	 */
 	public String getGraphName();
 }
