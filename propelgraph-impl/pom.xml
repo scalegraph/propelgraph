@@ -16,10 +16,10 @@
 
   <name>PropelGraph Implementations</name>
   <description>Interfaces for Faster portable property graph - Implementations </description>
-  <url>https://github.com/drewvale/propelgraph</url>
+  <url>https://github.com/scalegraph/propelgraph</url>
 
   <issueManagement>
-    <url>https://github.com/drewvale/propelgraph/issues</url>
+    <url>https://github.com/scalegraph/propelgraph/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
 
@@ -32,18 +32,18 @@
   </licenses>
 
   <!-- scm>
-    <url>https://github.com/drewvale/propelgraph</url>
-    <connection>scm:git:git://github.com/drewvale/propelgraph.git</connection>
-    <developerConnection>scm:git:git@github.com:drewvale/propelgraph.git</developerConnection>
+    <url>https://github.com/scalegraph/propelgraph</url>
+    <connection>scm:git:git://github.com/scalegraph/propelgraph.git</connection>
+    <developerConnection>scm:git:git@github.com:scalegraph/propelgraph.git</developerConnection>
   </scm-->
 
 
   <developers>
     <developer>
-      <email>tbd.drewvale@nosuchdomain.com</email>
-      <name>Drew Vale</name> 
-      <url>http://nosuchdomain.com</url>
-      <id>drewvale</id> 
+      <email>ccjason@us.ibm.com</email>
+      <name>Jason Crawford</name> 
+      <url>http://www.ibm.com</url>
+      <id>ccjason</id> 
     </developer>
   </developers>
 
@@ -149,7 +149,7 @@
           <configuration>
             <links>
               <link>http://www.tinkerpop.com/docs/javadocs/blueprints/2.4.0/</link>
-              <link>http://drewvale.github.io/propelgraph/propelgraph-interfaces/javadoc/</link>
+              <link>http://scalegraph.github.io/propelgraph/propelgraph-interfaces/javadoc/</link>
             </links>
           </configuration>
 	  <executions>

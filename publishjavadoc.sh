@@ -12,6 +12,7 @@
 #
 git checkout gh-pages || exit $?
 # Clear out the old files:
+mkdir -p javadoc
 rm -rf javadoc/* 
 # Replace them with new files and commit them:
 cp -pr target/apidocs/* javadoc/ \

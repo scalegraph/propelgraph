@@ -38,9 +38,11 @@ application only needs primitive int support.
 
 ## JavaDoc
 
-propelgraph-impl - [javadoc](http://drewvale.github.io/propelgraph/propelgraph-impl/javadoc/fixthislink)
+propelgraph-interfaces - [javadoc](http://scalegraph.github.io/propelgraph/propelgraph-interfaces/javadoc/)
 
-propelgraph-interfaces - [javadoc](http://drewvale.github.io/propelgraph/propelgraph-interfaces/javadoc/fixthislink)
+propelgraph-impl - [javadoc](http://scalegraph.github.io/propelgraph/propelgraph-impl/javadoc/)
+
+propelgraph-util - [javadoc](http://scalegraph.github.io/propelgraph/propelgraph-util/javadoc/)
 
 
 ## Demo
