@@ -47,7 +47,7 @@ public class CreateGraph {
     public static final String GRAPH_TITANHBASE = "titanhbase";
     public static final String GRAPH_TITANBERK = "titanberk";
     //public static final String GRAPH_TINKERGRAPHPRELOADED = "tinkergraphreloaded";
-    public static final String GRAPH_TINKERMEMGRAPH = "tinkermemgraph";
+    public static final String GRAPH_TINKERMEM = "tinkermem";
     public static final String GRAPH_DB2RDF = "db2rdf";
     public static final String GRAPH_NATIVESTORE = "nativestore";
     public static final String GRAPH_NATIVEMEM = "nativemem";
@@ -87,8 +87,8 @@ public class CreateGraph {
 	    ////log.setLevel()
 	    //System.setProperty("org.slf4j.simpleLogger.log.com.thinkaurelius.titan.graphdb.query.QueryProcessor", "info");
 	    //return g;
-	} else if (GRAPH_TINKERMEMGRAPH.equals(graphtype)) {
-	    return "pggraph:org.propelgraph.TinkerGraphLocatableGraphFactory/?&graphname=memory"; 
+	} else if (GRAPH_TINKERMEM.equals(graphtype)) {
+	    return "pggraph:org.propelgraph.tinkergraph.TinkerGraphLocatableGraphFactory/?&graphname=memory&tggraphtype=INMEMORY"; 
 	} else if (GRAPH_NATIVESTORE.equals(graphtype)) {
 	    return "pggraph:com.ibm.research.systemg.nativestore.tinkerpop.NSLocatableGraphFactory/?&graphname="+graphname+"&dirpath=nativestore&nsgraphtype=PERSISTENT";
 	} else if (GRAPH_NATIVEMEM.equals(graphtype)) {
@@ -111,7 +111,7 @@ public class CreateGraph {
 		return (null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
 	    } else if (GRAPH_TITANBERK.equals(graphtype)) {
 		return (null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
-	    } else if (GRAPH_TINKERMEMGRAPH.equals(graphtype)) {
+	    } else if (GRAPH_TINKERMEM.equals(graphtype)) {
 		return LocatableGraphFactory.FACTION_NEW_NEW;
 	    } else if (GRAPH_NATIVESTORE.equals(graphtype)) {
 		return (null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
@@ -144,7 +144,7 @@ public class CreateGraph {
 	    ((ClearableGraph)retval).clear();
 	    mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_EMPTY);
 	    return retval;
-	} else if (GRAPH_TINKERMEMGRAPH.equals(graphtype)) {
+	} else if (GRAPH_TINKERMEM.equals(graphtype)) {
 	    Graph retval = openGraph(graphtype,graphname,mapParams);
 	    return retval;
 	} else {
@@ -274,7 +274,7 @@ public class CreateGraph {
 	    //log.setLevel()
 	    //System.setProperty("org.slf4j.simpleLogger.log.com.thinkaurelius.titan.graphdb.query.QueryProcessor", "info");
 	    return g;
-	} else if (GRAPH_TINKERMEMGRAPH.equals(graphtype)) {
+	} else if (GRAPH_TINKERMEM.equals(graphtype)) {
 	    mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_EMPTY);
 	    return g;
 	} else if (GRAPH_NATIVEMEM.equals(graphtype)) {

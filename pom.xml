@@ -8,10 +8,10 @@
 
   <name>PropelGraph All</name>
   <description>Faster portable property graph interface</description>
-  <url>https://github.com/drewvale/propelgraph</url>
+  <url>https://github.com/scalegraph/propelgraph</url>
 
   <issueManagement>
-    <url>https://github.com/drewvale/propelgraph/issues</url>
+    <url>https://github.com/scalegraph/propelgraph/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
 
@@ -24,18 +24,18 @@
   </licenses>
 
   <scm>
-    <url>https://github.com/drewvale/propelgraph</url>
-    <connection>scm:git:git://github.com/drewvale/propelgraph.git</connection>
-    <developerConnection>scm:git:git@github.com:drewvale/propelgraph.git</developerConnection>
+    <url>https://github.com/scalegraph/propelgraph</url>
+    <connection>scm:git:git://github.com/scalegraph/propelgraph.git</connection>
+    <developerConnection>scm:git:git@github.com:scalegraph/propelgraph.git</developerConnection>
   </scm>
 
 
   <developers>
     <developer>
-      <email>tbd.drewvale@nosuchdomain.com</email>
-      <name>Drew Vale</name> 
-      <url>http://nosuchdomain.com</url>
-      <id>drewvale</id> 
+      <email>ccjason@us.ibm.com</email>
+      <name>Jason Crawford</name> 
+      <url>http://www.ibm.com/</url>
+      <id>ccjason</id> 
     </developer>
   </developers>
 
@@ -58,6 +58,7 @@
       <module>propelgraph-interfaces</module>
       <module>propelgraph-impl</module>
       <!--module>propelgraph-neo4j</module    only uncomment this once you are aware of the implications of the license neo4j uses. -->
+      <module>propelgraph-tinkergraph</module>
       <module>propelgraph-util</module>
       <module>propelgraph-gremlin</module>
     </modules>

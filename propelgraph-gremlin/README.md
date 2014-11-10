@@ -63,10 +63,13 @@ hard disk.
 
 We can now use Gremlin to calculate "collaborative filter".  This is just a way to find
 vertices that share similar neighbors as the one of interest.
+
 ```
-v = g.v(20)
-v._exid
-v.both.both.dedup()._exid
+v = g.v("Kevin Bacon")
+```
+or  something like `v = g.v(20)` if you're using most of the common graph implementations
+```
+v.both.both.dedup()
 ```
 
 One feature of propelgraph is the ability to call various analytics against graphs that adhere

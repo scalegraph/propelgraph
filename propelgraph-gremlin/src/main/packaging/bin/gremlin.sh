@@ -15,5 +15,9 @@ CLPATH=${CLPATH}:$( echo `dirname $0`/../lib/*.jar . | sed 's/ /:/g')
 CLASSPATH=${CLPATH}
 export CLASSPATH
 
+mkdir -p tinkergraphstore
+# store directory for IBM System-G NativeStore
+#mkdir -p nativestore
+
 java org.propelgraph.gremlin.Console $1 $2 $3 $4 $5 $6 $7
 

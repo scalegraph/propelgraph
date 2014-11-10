@@ -203,7 +203,7 @@ public class LoadCSV {
 		}
 	    }
 	    if (cntLines>max) break;
-	    if (cntLines%100000==5) { 
+	    if (cntLines%100000==35) { 
 		long t3 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  commit_freq=%d  %s \n", (t3-t0), cntEdges, cntVerts, cntVerts*1000L/(t3-t0), cntProps, cntLines, commit_frequency , whichstream );
 	    }
 
@@ -319,7 +319,7 @@ public class LoadCSV {
 		}
 	    }
 	    if (cntLines>max) break;
-	    if (cntLines%100000==5) {
+	    if (cntLines%100000==35) {
 		long t3 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  commit_freq=%d %s \n", (t3-t0), cntEdges, cntVerts, cntVerts*1000L/(t3-t0), cntProps, cntLines, commit_frequency, whichstream  );
 	    }
 	}
