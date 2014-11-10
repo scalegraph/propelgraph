@@ -12,7 +12,7 @@ Prereqs
 - git (optional, `yum install git` )
 - Java 1.6 or higher ( `yum install java-1.7.0-openjdk-devel` )
 - Maven (to conveniently compile) ( `yum install maven` )
-- Any prereqs for the graph implementations you choose (Ex: System-G: Linux, Intel64)
+- Any prereqs for the graph implementations you choose 
  - System-G - Default: (Linux, Intel64)  Mac:(Intel64)
  
 
@@ -48,12 +48,12 @@ You are now in the Gremlin shell.  To learn more about Gremlin, try a tutorial l
 
 One component of propelgraph is propelgraph-util.  One of the capabilities it provides is a concise way to construct some common
 graph implementations you might have included with you program.  Another capability it provides is a CSV file populator.  You can
-use them here.  Here we use IBM's NativeMem in memory graph.  If you don't have that available you can also try the in-memory
+use them here.  Here we use the in-memory
 version of TinkerGraph ("tinkermem").  See [propelgraph-util](https://github.com/scalegraph/propelgraph/tree/master/propelgraph-util) 
 to learn more about these capabilities and others.
 
 ```
-g = CreateGraph.openGraph("nativemem","awesome")
+g = CreateGraph.openGraph("tinkermem","my_awesome_graph")
 new LoadCSV().populateFromVertexFile(g, "data/movies.movies.v.csv", "movies", 5555555)
 new LoadCSV().populateFromEdgeFile(g, "data/movies.appearances.e.csv", "appearances", 5555555)
 ```
