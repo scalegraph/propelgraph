@@ -113,5 +113,14 @@ public class MemEdge extends MemElement implements Edge {
 		}
 	}
 
+	@Override
+	public String toString() {
+		// the test suite seems to think that the string produced must begin with the following....
+		String sw = this.getClass().getSimpleName().toLowerCase();
+		// so until we understand exactly why that is, let's just return exactly that....
+		String msg = ""+id;
+		return sw+"["+msg+"]";
+	}
 
 }
+

@@ -121,4 +121,14 @@ public class MemVertex extends MemElement implements Vertex {
 			super.setProperty(propname, val);
 		}
 	}
+
+	@Override
+	public String toString() {
+		// the test suite seems to think that the string produced must begin with the following....
+		String sw = this.getClass().getSimpleName().toLowerCase();
+		// so until we understand exactly why that is, let's just return exactly that....
+		String msg = ""+id;
+		return sw+"["+msg+"]";
+	}
+
 }
