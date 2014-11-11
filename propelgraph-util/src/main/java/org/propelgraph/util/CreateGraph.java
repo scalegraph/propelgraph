@@ -34,11 +34,23 @@ import com.tinkerpop.blueprints.KeyIndexableGraph;
  * @author ccjason (3/25/2014)
  */
 
+/**
+ * This class provides helper methods that simplify creation and
+ * opening of graphs while still supporting the 
+ * LocatableGraphFactory family of interfaces. 
+ *  
+ * <pre> 
+ * {@code 
+ *   Graph g = CreateGraph.openGraph( CreateGraph.GRAPH_TINKERMEM,
+ * } 
+ * </pre> 
+ * 
+ * @author ccjason (11/11/2014)
+ */
 public class CreateGraph {
 
 	public static final String GRAPHHINT_IS_EMPTY = "---graphhint_is_empty";
-	//public static final String GRAPHHINT_IS_NEWLYCREATED = "---graphhint_is_newlycreated"; // removed this because don't know where callled and definition not documented here
-
+	
 	// for new graphs that only contain a sample graph
 	public static final String GRAPHHINT_IS_NEWLYPOPULATED = "---graphhint_is_newlypopulated";
 
@@ -55,7 +67,22 @@ public class CreateGraph {
 	public static final String GRAPH_PROPELMEM = "propelmem";
 	public static final String GRAPH_NATIVEMEMAUTHORS = "nativemem_authors";
 
-	public static String createGraphURL(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException {
+	/**
+	 * returns a locatable graph urlstring for the specified 
+	 * graphtype.  This helper routine can be handy because graph 
+	 * urlstrings are not convenient to remember or type. 
+	 * 
+	 * @author ccjason (11/11/2014)
+	 * 
+	 * @param graphtype the type of graph to create.  Values can be 
+	 *      	    any of the CreateGraph.GRAPH_* values like
+	 *      	    "neo4j" or "tinkermem".
+	 * @param graphname 
+	 * @param mapParams 
+	 * 
+	 * @return String 
+	 */
+	private static String createGraphURL(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException {
 		if (GRAPH_GBASE.equals(graphtype)) {
 			return "pggraph:org.propelgraph.gbase.SGBPLocatableGraphFactory/?&graphname="+graphname+"&hostname="+(mapParams.get("--hostname")) ;
 		} else if (GRAPH_NEO4J.equals(graphtype)) {
@@ -104,7 +131,7 @@ public class CreateGraph {
 		}
 	}
 
-	public static String createGraphFAction( Map<String,String> mapParams, String graphtype ) {
+	private static String createGraphFAction( String graphtype, Map<String,String> mapParams  ) {
 		if (GRAPH_GBASE.equals(graphtype)) {
 			return(null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
 		} else if (GRAPH_NEO4J.equals(graphtype)) {
@@ -169,6 +196,15 @@ public class CreateGraph {
 		}
 	}
 
+	/**
+	 * adds vertices and edges related to Shakespeare.  If the graph
+	 * was empty, the resulting small graph is suitable for some 
+	 * simple demos. 
+	 * 
+	 * @author ccjason (11/11/2014)
+	 * 
+	 * @param g 
+	 */
 	public static void addAuthorInfo(Graph g) {
 		Vertex vAnneHathaway = g.addVertex(null); vAnneHathaway.setProperty("name","Anne Hathaway");
 		Vertex vShakespeare = g.addVertex(null);
@@ -188,6 +224,20 @@ public class CreateGraph {
 
 	}
 
+	/**
+	 * a simpler version of the {@link 
+	 * #operGraph(String,String,Map<String,String>)} method. This 
+	 * method is more suitable for use in the Gremlin console.
+	 * 
+	 * @author ccjason (11/11/2014)
+	 * 
+	 * @param graphtype 
+	 * @param graphname 
+	 *  
+	 * @return Graph 
+	 *  
+	 * @see  #operGraph(String,String,Map)
+	 */
 	public static Graph openGraph(String graphtype, String graphname ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		return openGraph(graphtype,graphname,new HashMap<String,String>());
 	}
@@ -206,7 +256,7 @@ public class CreateGraph {
 	 */
 	private static Graph _openGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		String graphurl = createGraphURL(graphtype, graphname, mapParams); //System.out.println("graph url: "+graphurl);
-		String faction = createGraphFAction( mapParams, graphtype ); //System.out.println("graph url: "+graphurl);
+		String faction = createGraphFAction( graphtype, mapParams ); //System.out.println("graph url: "+graphurl);
 
 		LocatableGraphFactory gf = LocatableGraphFactoryFactoryImpl.getGraphFactory(graphurl);
 		Graph g = gf.open(graphurl, faction, LocatableGraphFactory.FMODE_WRITE);
@@ -214,28 +264,35 @@ public class CreateGraph {
 	}
 
 	/**
-	 * creates a graph.  
+	 * creates a graph. 
+	 *  
+	 * Design: this class and method is work in progress.  It is 
+	 * subject to change.  For that reason please consider it to be 
+	 * deprecated. 
+	 *  
+	 * @deprecated 
 	 * 
 	 * @author ccjason (2013)
 	 * 
-	 * @param graphtype 
-	 * @param graphname 
-	 * @param mapParams 
+	 * @param graphtype the type of graph to create.  Values can be 
+	 *      	    any of the CreateGraph.GRAPH_* values like
+	 *      	    "neo4j" or "tinkermem".
+	 * @param graphname a short name that should be included in the 
+	 *      	    stdout logging of progress. Ex.
+	 *      	    "my_family_tree_graph"
+	 *  
+	 * @param mapParams a list of configuration or option 
+	 *      	    parameters. Some of the values are used by
+	 *      	    the graph implementations.  A few are used
+	 *      	    by this class itself.  This parameter is
+	 *      	    also used to pass information back to the
+	 *      	    caller.  The conventions for that are still
+	 *      	    work in progress.
 	 * 
 	 * @return Graph 
 	 */
-	public static Graph openGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
+	private static Graph openGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		Graph g = _openGraph(graphtype, graphname, mapParams);
-		long countval = 40000; // 40k default
-		{
-			String argval = mapParams.get("--count");
-			if (argval==null) {
-			} else if (argval.equals("all")) {
-				countval = 0x7fffffffffffffffL;
-			} else {
-				countval = Long.parseLong(argval);
-			}
-		}
 
 		if (GRAPH_GBASE.equals(graphtype)) {
 			//((PreloadableGraph)g).preLoad();
