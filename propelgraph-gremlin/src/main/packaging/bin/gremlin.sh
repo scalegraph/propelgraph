@@ -16,8 +16,9 @@ CLASSPATH=${CLPATH}
 export CLASSPATH
 
 mkdir -p tinkergraphstore
+mkdir -p neo4jstores
 # store directory for IBM System-G NativeStore
-#mkdir -p nativestore
+mkdir -p nativestore
 
 java org.propelgraph.gremlin.Console $1 $2 $3 $4 $5 $6 $7
 

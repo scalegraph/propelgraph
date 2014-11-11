@@ -54,8 +54,8 @@ to learn more about these capabilities and others.
 
 ```
 g = CreateGraph.openGraph("tinkermem","my_awesome_graph")
-new LoadCSV().populateFromVertexFile(g, "data/movies.movies.v.csv", "movies", 5555555)
-new LoadCSV().populateFromEdgeFile(g, "data/movies.appearances.e.csv", "appearances", 5555555)
+new LoadCSV().populateFromVertexFile(g, "data/movies.movies.v.csv", "movies", 555000111)
+new LoadCSV().populateFromEdgeFile(g, "data/movies.appearances.e.csv", "appearances", 555000111)
 ```
 
 You now have a graph ("g") that is initialized with some movie and actor data from the local
