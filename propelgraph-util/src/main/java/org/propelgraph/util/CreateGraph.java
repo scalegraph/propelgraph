@@ -212,14 +212,25 @@ public class CreateGraph {
 	}
 
 	/**
-	 * a simpler version of the {@link 
-	 * #openGraph(String,String,Map)} method. This 
-	 * method is more suitable for use in the Gremlin console.
+	 * create or open a graph of the specified graph type with the 
+	 * specified name.  This method simplifies the steps of creating 
+	 * a graph of various types.   
 	 * 
 	 * @author ccjason (11/11/2014)
 	 * 
-	 * @param graphtype 
-	 * @param graphname 
+	 * @param graphtype the type of graph to create.  Values can be 
+	 *      	    any of the CreateGraph.GRAPH_* values like
+	 *      	    "neo4j" or "tinkermem".
+	 *  
+	 *      	     Note: If the code implementing the
+	 *      	     specified graph has not already been
+	 *      	     placed in the classpath, this method with
+	 *      	     throw an exception.
+	 *  
+	 * @param graphname a short name that should be included in the 
+	 *      	    stdout logging of progress. Ex.
+	 *      	    "my_family_tree_graph"
+	 *  
 	 *  
 	 * @return Graph 
 	 *  
