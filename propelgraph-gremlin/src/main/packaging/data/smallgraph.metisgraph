@@ -1,0 +1,9 @@
+% five vertices and 11 (or 22 directed) edges 
+2 5 6
+1 7 8
+7 5 4 8
+3 8
+3 1 7
+1
+2 3 5
+2 3 4

@@ -47,9 +47,10 @@ You are now in the Gremlin shell.  To learn more about Gremlin, try a tutorial l
 
 
 One component of propelgraph is propelgraph-util.  One of the capabilities it provides is a concise way to construct some common
-graph implementations you might have included with you program.  Another capability it provides is a CSV file populator.  You can
-use them here.  Here we use the in-memory
-version of TinkerGraph ("tinkermem").  See [propelgraph-util](https://github.com/scalegraph/propelgraph/tree/master/propelgraph-util) 
+graph implementations you might have included with you program.  Another capability it provides is file loading for CSV or Metis files.  You can
+use them here.  Here we use the 
+PropelGraph MemGraph ("propelmem").  See [propelgraph-util](https://github.com/scalegraph/propelgraph/tree/master/propelgraph-util) 
+and its [javadoc](http://scalegraph.github.io/propelgraph/propelgraph-util/javadoc/)
 to learn more about these capabilities and others.
 
 ```
