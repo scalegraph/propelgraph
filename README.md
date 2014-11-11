@@ -40,7 +40,7 @@ application only needs primitive int support.
 
 propelgraph-interfaces - [javadoc](http://scalegraph.github.io/propelgraph/propelgraph-interfaces/javadoc/)
 
-propelgraph-impl - [javadoc](http://scalegraph.github.io/propelgraph/propelgraph-impl/javadoc/)
+propelgraph-memgraph - [javadoc](http://scalegraph.github.io/propelgraph/propelgraph-memgraph/javadoc/)
 
 propelgraph-util - [javadoc](http://scalegraph.github.io/propelgraph/propelgraph-util/javadoc/)
 
