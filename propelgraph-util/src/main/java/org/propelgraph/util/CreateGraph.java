@@ -49,9 +49,19 @@ import com.tinkerpop.blueprints.KeyIndexableGraph;
  */
 public class CreateGraph {
 
+	/**
+	 * @deprecated
+	 * 
+	 * @author ccjason (11/11/2014)
+	 */
 	public static final String GRAPHHINT_IS_EMPTY = "---graphhint_is_empty";
 	
 	// for new graphs that only contain a sample graph
+	/**
+	 * @deprecated
+	 * 
+	 * @author ccjason (11/11/2014)
+	 */
 	public static final String GRAPHHINT_IS_NEWLYPOPULATED = "---graphhint_is_newlypopulated";
 
 
@@ -90,32 +100,9 @@ public class CreateGraph {
 		} else if (GRAPH_DB2RDF.equals(graphtype)) {
 			throw new RuntimeException("do not yet support this type of constructor for db2rdf graph");
 		} else if (GRAPH_TITANHBASE.equals(graphtype)) {
-			//if (null!=new Object()) throw new RuntimeException("have not tested this type of constructor for titan hbase graph");
 			return "pggraph:org.propelgraph.titan.TitanHBaseLocatableGraphFactory/?&graphname="+graphname+"&store=hbase&hostname="+(mapParams.get("--hostname"));
-			//BaseConfiguration conf = new BaseConfiguration();
-			//conf.setProperty("storage.backend","hbase");
-			//conf.setProperty("storage.hostname",hbasehost);
-			//conf.setProperty("storage.tablename","titan"+graphname);
-			//TitanGraph g = TitanFactory.open(conf);
-			//g.createKeyIndex(idPropForId, Vertex.class);
-			//return g;
 		} else if (GRAPH_TITANBERK.equals(graphtype)) {
 			return "pggraph:org.propelgraph.titan.TitanBerkeleyLocatableGraphFactory/?&graphname="+graphname+"&store=berkdb&dirpath=titanbstores";
-			//throw new RuntimeException("do not yet support this type of constructor for titan berkeley graph");
-			//System.setProperty("org.slf4j.simpleLogger.log.com.thinkaurelius.titan.graphdb.query.QueryProcessor", "info");
-			//File fiDirGraph = new File("titanbstores/"+graphname);
-			//boolean boolAlreadyExists = fiDirGraph.exists();
-			//BaseConfiguration conf = new BaseConfiguration();
-			//conf.setProperty("storage.directory", fiDirGraph.getAbsoluteFile().toString());
-			//conf.setProperty("storage.backend", "berkeleyje");
-			//TitanGraph g = TitanFactory.open(conf);
-			//if (!boolAlreadyExists) {
-			//      g.createKeyIndex(idPropForId, Vertex.class);
-			//}
-			////Logger log = LoggerFactory.getLogger(QueryProcessor.class);
-			////log.setLevel()
-			//System.setProperty("org.slf4j.simpleLogger.log.com.thinkaurelius.titan.graphdb.query.QueryProcessor", "info");
-			//return g;
 		} else if (GRAPH_TINKERMEM.equals(graphtype)) {
 			return "pggraph:org.propelgraph.tinkergraph.TinkerGraphLocatableGraphFactory/?&graphname=memory&tggraphtype=INMEMORY"; 
 		} else if (GRAPH_PROPELMEM.equals(graphtype)) {
@@ -226,7 +213,7 @@ public class CreateGraph {
 
 	/**
 	 * a simpler version of the {@link 
-	 * #operGraph(String,String,Map<String,String>)} method. This 
+	 * #openGraph(String,String,Map)} method. This 
 	 * method is more suitable for use in the Gremlin console.
 	 * 
 	 * @author ccjason (11/11/2014)
@@ -236,7 +223,7 @@ public class CreateGraph {
 	 *  
 	 * @return Graph 
 	 *  
-	 * @see  #operGraph(String,String,Map)
+	 * @see  #openGraph(String,String,Map)
 	 */
 	public static Graph openGraph(String graphtype, String graphname ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		return openGraph(graphtype,graphname,new HashMap<String,String>());
