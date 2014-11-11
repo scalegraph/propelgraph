@@ -10,12 +10,12 @@
   </parent>
 
   <groupId>org.propelgraph</groupId>
-  <artifactId>propelgraph-impl</artifactId>
+  <artifactId>propelgraph-memgraph</artifactId>
   <!-- version>2.4.0-SNAPSHOT</version inherit from parent -->
   <packaging>jar</packaging>
 
-  <name>PropelGraph Implementations</name>
-  <description>Interfaces for Faster portable property graph - Implementations </description>
+  <name>PropelGraph MemGraph</name>
+  <description>Interfaces for Faster portable property graph - MemGraph </description>
   <url>https://github.com/scalegraph/propelgraph</url>
 
   <issueManagement>
@@ -150,7 +150,7 @@
             <links>
               <link>http://www.tinkerpop.com/docs/javadocs/blueprints/2.4.0/</link>
               <link>http://scalegraph.github.io/propelgraph/propelgraph-interfaces/javadoc/</link>
-              <link>http://scalegraph.github.io/propelgraph/propelgraph-impl/javadoc/</link>
+              <link>http://scalegraph.github.io/propelgraph/propelgraph-memgraph/javadoc/</link>
               <link>http://scalegraph.github.io/propelgraph/propelgraph-util/javadoc/</link>
             </links>
           </configuration>

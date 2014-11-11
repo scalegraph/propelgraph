@@ -56,7 +56,7 @@
 
     <modules>
       <module>propelgraph-interfaces</module>
-      <module>propelgraph-impl</module>
+      <module>propelgraph-memgraph</module>
       <!--module>propelgraph-neo4j</module    only uncomment this once you are aware of the implications of the license neo4j uses. -->
       <module>propelgraph-tinkergraph</module>
       <module>propelgraph-util</module>

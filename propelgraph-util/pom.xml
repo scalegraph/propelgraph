@@ -150,7 +150,7 @@
             <links>
               <link>http://www.tinkerpop.com/docs/javadocs/blueprints/2.4.0/</link>
               <link>http://scalegraph.github.io/propelgraph/propelgraph-interfaces/javadoc/</link>
-              <link>http://scalegraph.github.io/propelgraph/propelgraph-impl/javadoc/</link>
+              <link>http://scalegraph.github.io/propelgraph/propelgraph-memgraph/javadoc/</link>
               <link>http://scalegraph.github.io/propelgraph/propelgraph-util/javadoc/</link>
             </links>
           </configuration>
@@ -192,7 +192,7 @@
     </dependency-->
     <dependency>
         <groupId>org.propelgraph</groupId>
-        <artifactId>propelgraph-impl</artifactId>
+        <artifactId>propelgraph-memgraph</artifactId>
         <version>2.4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
