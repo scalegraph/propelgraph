@@ -53,7 +53,7 @@ version of TinkerGraph ("tinkermem").  See [propelgraph-util](https://github.com
 to learn more about these capabilities and others.
 
 ```
-g = CreateGraph.openGraph("tinkermem","my_awesome_graph")
+g = CreateGraph.openGraph("propelmem","my_awesome_graph")
 new LoadCSV().populateFromVertexFile(g, "data/movies.movies.v.csv", "movies", 555000111)
 new LoadCSV().populateFromEdgeFile(g, "data/movies.appearances.e.csv", "appearances", 555000111)
 ```
@@ -67,14 +67,15 @@ vertices that share similar neighbors as the one of interest.
 ```
 v = g.v("Kevin Bacon")
 ```
-or  something like `v = g.v(20)` if you're using most of the common graph implementations
+or  something like `v = g.v(20)` if you're using most of the common graph implementations.  Then use Gremlin
+pipes to list two hop neighbors.
 ```
 v.both.both.dedup()
 ```
 
 One feature of propelgraph is the ability to call various analytics against graphs that adhere
 to the TinkerPop Blueprints interface, but also call, when available, analytic implementations
-built in to a graph implementation.   Because these implementations of knowledge of the underlying
+built in to a graph implementation.   Because these implementations have of knowledge of the underlying
 graph implementations, they generally run faster.
 Here we do this with an analytic called "collaborative filtering".
 ```
