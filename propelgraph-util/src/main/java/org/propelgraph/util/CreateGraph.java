@@ -144,10 +144,10 @@ public class CreateGraph {
 		}
 	}
 
-	public static Graph recreateGraph(String graphtype, String graphname ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
+	private static Graph recreateGraph(String graphtype, String graphname ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		return recreateGraph(graphtype,graphname,new HashMap<String,String>());
 	}
-	public static Graph recreateGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
+	private static Graph recreateGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		String graphurl = createGraphURL(graphtype, graphname, mapParams); //System.out.println("graph url: "+graphurl);
 		LocatableGraphFactory gf = LocatableGraphFactoryFactoryImpl.getGraphFactory(graphurl);
 		if (GRAPH_NATIVEMEMAUTHORS.equals(graphtype) || false ) {
@@ -264,6 +264,12 @@ public class CreateGraph {
 	 * @param graphtype the type of graph to create.  Values can be 
 	 *      	    any of the CreateGraph.GRAPH_* values like
 	 *      	    "neo4j" or "tinkermem".
+	 *  
+	 *      	     Note: If the code implementing the
+	 *      	     specified graph has not already been
+	 *      	     placed in the classpath, this method with
+	 *      	     throw an exception.
+	 *  
 	 * @param graphname a short name that should be included in the 
 	 *      	    stdout logging of progress. Ex.
 	 *      	    "my_family_tree_graph"
