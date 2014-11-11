@@ -38,13 +38,14 @@ import com.tinkerpop.blueprints.Edge;
 //import com.ibm.research.systemg.nativestore.JNIGen;
 
 /**
- * This class provides functionality for loading CSV files.  It 
- * attempts to take advantage of CSV loading functionality built 
- * in to a given graph implementation if it uses a known public 
- * open interface.  If the graph has no such method, then this 
- * code implements the CSV loading.  It nevertheless still tries 
- * to take advantage of other known public interfaces the graph 
- * has that might speed up the process. 
+ * This class provides functionality for loading Metis formatted 
+ * files. It will attempt to take advantage of Metis loading 
+ * functionality built in to a given graph implementation if it 
+ * uses a known public open interface.  If the graph has no such 
+ * method, then this code implements the Metis loading.  It 
+ * nevertheless still tries to take advantage of other known 
+ * public interfaces the graph has that might speed up the 
+ * process. 
  * 
  * @author ccjason (11/6/2014)
  */
