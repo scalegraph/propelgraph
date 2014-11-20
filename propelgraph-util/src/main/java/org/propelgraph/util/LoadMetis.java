@@ -88,11 +88,11 @@ public class LoadMetis {
      * 
      * @param g The graph to modify.
      * @param brWeb The stream providing the Metis content
-     * @param max The maximum number of Metis lines to consume
      * @param whichstream A label for the stream for the sake of 
      *  		  logging to stdout
+     * @param max The maximum number of Metis lines to consume
      */
-    public void populateFromMetisStream(Graph g, BufferedReader brWeb, long max, String whichstream) throws FileNotFoundException, IOException {
+    public void populateFromMetisStream(Graph g, BufferedReader brWeb, String whichstream, long max) throws FileNotFoundException, IOException {
 	//final int dographops = 2;
 	final boolean boolUseExternalId = true;
 	String line;
@@ -258,7 +258,7 @@ public class LoadMetis {
 	}
 	BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
 	LoadMetis lcsv = new LoadMetis(); 
-	lcsv.populateFromMetisStream(g, brWeb, max, graphshortname); //JNIGen.println("ln 378");
+	lcsv.populateFromMetisStream(g, brWeb, graphshortname, max); //JNIGen.println("ln 378");
 	brWeb.close();
 	isWeb.close();
 	if (g instanceof TransactionalGraph) {
@@ -295,7 +295,7 @@ public class LoadMetis {
 	    is = new FileInputStream(fn);
 	    BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8"));
 	    LoadMetis lcsv = new LoadMetis(); 
-	    lcsv.populateFromMetisStream(g, br, max, graphshortname);
+	    lcsv.populateFromMetisStream(g, br, graphshortname, max);
 	    br.close();
 	    is.close();
 	}

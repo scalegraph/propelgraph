@@ -132,11 +132,11 @@ public class LoadCSV {
      * 
      * @param g The graph to modify.
      * @param brWeb The stream providing the CSV content
-     * @param max The maximum number of CSV lines to consume
      * @param whichstream A label for the stream for the sake of 
      *  		  logging to stdout
+     * @param max The maximum number of CSV lines to consume
      */
-    public void populateFromCSVVertexStream(Graph g, BufferedReader brWeb, long max, String whichstream) throws FileNotFoundException, IOException {
+    public void populateFromCSVVertexStream(Graph g, BufferedReader brWeb, String whichstream, long max) throws FileNotFoundException, IOException {
 	//final int dographops = 2;
 	final boolean boolUseExternalId = true;
 	String line;
@@ -227,10 +227,10 @@ public class LoadCSV {
      * 
      * @param g 
      * @param brWeb 
-     * @param max 
      * @param whichstream 
+     * @param max 
      */
-    public void populateFromCSVEdgeStream(Graph g, BufferedReader brWeb, long max, String whichstream) throws FileNotFoundException, IOException {
+    public void populateFromCSVEdgeStream(Graph g, BufferedReader brWeb, String whichstream, long max) throws FileNotFoundException, IOException {
 	//final int dographops = 2;
 	final boolean boolUseExternalId = true;
 	String line;
@@ -371,7 +371,7 @@ public class LoadCSV {
 	}
 	BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
 	LoadCSV lcsv = new LoadCSV(); 
-	lcsv.populateFromCSVVertexStream(g, brWeb, max, graphshortname); //JNIGen.println("ln 378");
+	lcsv.populateFromCSVVertexStream(g, brWeb, graphshortname, max); //JNIGen.println("ln 378");
 	brWeb.close();
 	isWeb.close();
 	if (g instanceof TransactionalGraph) {
@@ -408,7 +408,7 @@ public class LoadCSV {
 	    is = new FileInputStream(fn);
 	    BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
 	    LoadCSV lcsv = new LoadCSV(); 
-	    lcsv.populateFromCSVVertexStream(g, br, max, graphshortname); //JNIGen.println("ln 378");
+	    lcsv.populateFromCSVVertexStream(g, br, graphshortname, max); //JNIGen.println("ln 378");
 	    br.close();
 	    is.close();
 	}
@@ -457,7 +457,7 @@ public class LoadCSV {
 	}
 	BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
 	LoadCSV lcsv = new LoadCSV(); 
-	lcsv.populateFromCSVEdgeStream(g, brWeb, max, graphshortname); //JNIGen.println("ln 378");
+	lcsv.populateFromCSVEdgeStream(g, brWeb, graphshortname, max); //JNIGen.println("ln 378");
 	brWeb.close();
 	isWeb.close();
 	if (g instanceof TransactionalGraph) {
@@ -492,7 +492,7 @@ public class LoadCSV {
 	    is = new FileInputStream(fn);
 	    BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
 	    LoadCSV lcsv = new LoadCSV(); 
-	    lcsv.populateFromCSVEdgeStream(g, br, max, graphshortname); //JNIGen.println("ln 378");
+	    lcsv.populateFromCSVEdgeStream(g, br, graphshortname, max); //JNIGen.println("ln 378");
 	    br.close();
 	    is.close();
 	}
