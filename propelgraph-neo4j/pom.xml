@@ -26,10 +26,15 @@ To use this file, you need to rename it to be pom.xml and remove this line. Only
   </issueManagement>
 
   <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
+      <license>
+          <name>Eclipse Public License v1.0</name>
+          <comments>
+            All rights reserved.
+            This program and the accompanying materials are made
+            available under the terms of the Eclipse Public License v1.0
+            which accompanies this distribution, and is available at
+            http://www.eclipse.org/legal/epl-v10.htm
+          </comments>
     </license>
   </licenses>
 
