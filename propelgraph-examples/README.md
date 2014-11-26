@@ -3,7 +3,8 @@
 
 ## Purpose
 This subdirectory of the PropelGraph project simply demonstrates how to create a project 
-that creates a Java program that uses PropelGraph.  
+that creates a Java program that uses PropelGraph.  You can copy and modify this
+subdirectory/project as a starting point for your own Java graph project.
 
 ## Building
 The project here is a standard Maven project, respecting Mavan conventions. Your steps are:
@@ -23,21 +24,21 @@ The project here is a standard Maven project, respecting Mavan conventions. Your
    [github](https://github.com/scalegraph/propelgraph/archive/master.zip).
 
 4. Go to the propelgraph-examples subdirectory
-```
-cd propelgraph/propelgraph-examples
-```
+  ```
+  cd propelgraph/propelgraph-examples
+  ```
 
 5. Invoke Maven on the project
 
-```
-mvn package
-```
+  ```
+  mvn package
+  ```
 
-4. Run the program
-For the MakeGraph program, try:
-```
-./makegraph.sh
-```
+6. Run the program
+   For the MakeGraph program, try:
+  ```
+  ./makegraph.sh
+  ```
 
 
 
