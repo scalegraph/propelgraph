@@ -24,7 +24,6 @@ import java.util.HashSet;
 
 public class MemEdge extends MemElement implements Edge {
 	String label;
-	String id;
 	MemVertex vertSrc, vertTgt;
 	MemEdge nextFromSrc, prevFromSrc;
 	MemEdge nextToTgt, prevToTgt;
