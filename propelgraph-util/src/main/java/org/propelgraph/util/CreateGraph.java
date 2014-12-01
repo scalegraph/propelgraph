@@ -238,39 +238,47 @@ public class CreateGraph {
 	 * 
 	 * @return Graph 
 	 */
-	public static Graph recreateGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
+	public static Graph recreateGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, /*AlreadyExistsException, NotFoundException,*/ UnsupportedFActionException {
 		String graphurl = createGraphURL(graphtype, graphname, mapParams); //System.out.println("graph url: "+graphurl);
 		LocatableGraphFactory gf = LocatableGraphFactoryFactoryImpl.getGraphFactory(graphurl);
-		if (GRAPH_NATIVEMEMAUTHORS.equals(graphtype) || false ) {
-			Graph retval = openGraph(graphtype,graphname,mapParams);
-			//mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_NEWLYCREATED);
-			return retval;
-		} else if (gf instanceof DeleteableGraphFactory) {
-			((DeleteableGraphFactory)gf).delete(graphurl);
-			Graph retval = openGraph(graphtype,graphname,mapParams);
-			mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_EMPTY);
-			return retval;
-		} else if (GRAPH_GBASE.equals(graphtype)) {
-			Graph retval = openGraph(graphtype,graphname,mapParams);
-			((ClearableGraph)retval).clear();
-			mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_EMPTY);
-			return retval;
-		} else if (GRAPH_TINKERMEM.equals(graphtype)) {
-			Graph retval = openGraph(graphtype,graphname,mapParams);
-			return retval;
-		} else if (GRAPH_PROPELMEM.equals(graphtype)) {
-			Graph retval = openGraph(graphtype,graphname,mapParams);
-			return retval;
-		} else {
-			Graph retval = openGraph(graphtype,graphname,mapParams);
-			{
-				Iterable<Vertex> itbl = retval.getVertices();
-				if (itbl.iterator().hasNext()) {
-					retval.shutdown();
-					throw new RuntimeException( "we have not yet implemented a way to insure that a "+graphtype+" graph is empty and this one clearly is not empty.  You should drop the titan"+graphname+" table in the hbase shell");
-				}
-			}
-			return retval;
+		try {
+		    if (GRAPH_NATIVEMEMAUTHORS.equals(graphtype) || false ) {
+			    Graph retval = openGraph(graphtype,graphname,mapParams);
+			    //mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_NEWLYCREATED);
+			    return retval;
+		    } else if (gf instanceof DeleteableGraphFactory) {
+			    ((DeleteableGraphFactory)gf).delete(graphurl);
+			    Graph retval = openGraph(graphtype,graphname,mapParams);
+			    mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_EMPTY);
+			    return retval;
+		    } else if (GRAPH_GBASE.equals(graphtype)) {
+			    Graph retval = openGraph(graphtype,graphname,mapParams);
+			    ((ClearableGraph)retval).clear();
+			    mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_EMPTY);
+			    return retval;
+		    } else if (GRAPH_TINKERMEM.equals(graphtype)) {
+			    Graph retval = openGraph(graphtype,graphname,mapParams);
+			    return retval;
+		    } else if (GRAPH_PROPELMEM.equals(graphtype)) {
+			    Graph retval = openGraph(graphtype,graphname,mapParams);
+			    return retval;
+		    } else {
+			    Graph retval = openGraph(graphtype,graphname,mapParams);
+			    {
+				    Iterable<Vertex> itbl = retval.getVertices();
+				    if (itbl.iterator().hasNext()) {
+					    retval.shutdown();
+					    throw new RuntimeException( "we have not yet implemented a way to insure that a "+graphtype+" graph is empty and this one clearly is not empty.  You should drop the titan"+graphname+" table in the hbase shell");
+				    }
+			    }
+			    return retval;
+		    }
+		} catch (NotFoundException exc) {
+		    // note: we probably should not reach here if we've done everything correctly.  We SHOULD simply create the graph if not found.
+		    throw new RuntimeException(exc);
+		} catch (AlreadyExistsException exc) {
+		    // note: we probably should not reach here if we've done everything correctly.  We SHOULD support recreating a graph even if it exists, not throwing an exception.
+		    throw new RuntimeException(exc);
 		}
 	}
 
