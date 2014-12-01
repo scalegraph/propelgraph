@@ -64,17 +64,80 @@ public class CreateGraph {
 	 */
 	public static final String GRAPHHINT_IS_NEWLYPOPULATED = "---graphhint_is_newlypopulated";
 
-
+	/**
+	 * An HBase-based graph from IBM Research.  This value can be be
+	 * passed to various methods of this class to indicate that that 
+	 * a graph of that type be created. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_GBASE = "gbase";
+	/**
+	 * A Neo4j graph. This value can be be passed to various methods
+	 * of this class to indicate that that a graph of that type be 
+	 * created or opened. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_NEO4J = "neo4j";
+	/**
+	 * A HBase-based Titan graph. This value can be be passed to
+	 * various methods of this class to indicate that that a graph 
+	 * of that type be created or opened. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_TITANHBASE = "titanhbase";
+	/**
+	 * A BerkeleyDB-based Titan graph. This value can be be passed 
+	 * to various methods of this class to indicate that that a 
+	 * graph of that type be created or opened. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_TITANBERK = "titanberk";
 	//public static final String GRAPH_TINKERGRAPHPRELOADED = "tinkergraphreloaded";
+
+	/**
+	 * An in-memory TinkerPop TinkerGraph graph. This value can be
+	 * be passed to various methods of this class to indicate that 
+	 * that a graph of that type be created. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_TINKERMEM = "tinkermem";
 	public static final String GRAPH_DB2RDF = "db2rdf";
+	/**
+	 * A JNI-based graph from IBM Research. This value can be be
+	 * passed to various methods of this class to indicate that that 
+	 * a graph of that type be created. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_NATIVESTORE = "nativestore";
+	/**
+	 * An in-memory JNI-based graph from IBM Research. This value 
+	 * can be be passed to various methods of this class to indicate
+	 * that that a graph of that type be created. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_NATIVEMEM = "nativemem";
+	/**
+	 * An in-memory graph from the PropelGraph project. This value
+	 * can be be passed to various methods of this class to indicate 
+	 * that that a graph of that type be created. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_PROPELMEM = "propelmem";
+	/**
+	 * An nativemem graph initialized with the authors sample graph. 
+	 * This value can be be passed to various methods of this class 
+	 * to indicate that that a graph of that type be created. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
 	public static final String GRAPH_NATIVEMEMAUTHORS = "nativemem_authors";
 
 	/**
@@ -144,10 +207,37 @@ public class CreateGraph {
 		}
 	}
 
-	private static Graph recreateGraph(String graphtype, String graphname ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
+	/**
+	 * recreate the graph from scratch.  
+	 * 
+	 * @author ccjason (11/30/2014)
+	 * 
+	 * @param graphtype 
+	 * @param graphname 
+	 * 
+	 * @return Graph 
+	 */
+	public static Graph recreateGraph(String graphtype, String graphname ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		return recreateGraph(graphtype,graphname,new HashMap<String,String>());
 	}
-	private static Graph recreateGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
+	/**
+	 * recreate the graph from scratch. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 * 
+	 * @param graphtype specifies the type of graph to create.  See 
+	 *      	    the GRAPH_* static constants of this class.
+	 * @param graphname a short name for the graph.  For persistant 
+	 *      	    graphs this will also indicate the location
+	 *      	    of the graph.
+	 * @param mapParams a set of supplemental parameters that modify 
+	 *      	    how the graph is created and return
+	 *      	    additional information about how the graph
+	 *      	    was created.
+	 * 
+	 * @return Graph 
+	 */
+	public static Graph recreateGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		String graphurl = createGraphURL(graphtype, graphname, mapParams); //System.out.println("graph url: "+graphurl);
 		LocatableGraphFactory gf = LocatableGraphFactoryFactoryImpl.getGraphFactory(graphurl);
 		if (GRAPH_NATIVEMEMAUTHORS.equals(graphtype) || false ) {
