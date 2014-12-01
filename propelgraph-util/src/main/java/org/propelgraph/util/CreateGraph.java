@@ -67,7 +67,7 @@ public class CreateGraph {
 	/**
 	 * An HBase-based graph from IBM Research.  This value can be be
 	 * passed to various methods of this class to indicate that that 
-	 * a graph of that type be created. 
+	 * a graph of that type be created or opened. 
 	 * 
 	 * @author ccjason (11/30/2014)
 	 */
@@ -101,7 +101,7 @@ public class CreateGraph {
 	/**
 	 * An in-memory TinkerPop TinkerGraph graph. This value can be
 	 * be passed to various methods of this class to indicate that 
-	 * that a graph of that type be created. 
+	 * that a graph of that type be created or opened. 
 	 * 
 	 * @author ccjason (11/30/2014)
 	 */
@@ -110,7 +110,7 @@ public class CreateGraph {
 	/**
 	 * A JNI-based graph from IBM Research. This value can be be
 	 * passed to various methods of this class to indicate that that 
-	 * a graph of that type be created. 
+	 * a graph of that type be created or opened. 
 	 * 
 	 * @author ccjason (11/30/2014)
 	 */
@@ -118,7 +118,7 @@ public class CreateGraph {
 	/**
 	 * An in-memory JNI-based graph from IBM Research. This value 
 	 * can be be passed to various methods of this class to indicate
-	 * that that a graph of that type be created. 
+	 * that that a graph of that type be created or opened. 
 	 * 
 	 * @author ccjason (11/30/2014)
 	 */
@@ -126,7 +126,7 @@ public class CreateGraph {
 	/**
 	 * An in-memory graph from the PropelGraph project. This value
 	 * can be be passed to various methods of this class to indicate 
-	 * that that a graph of that type be created. 
+	 * that that a graph of that type be created or opened. 
 	 * 
 	 * @author ccjason (11/30/2014)
 	 */
@@ -134,7 +134,8 @@ public class CreateGraph {
 	/**
 	 * An nativemem graph initialized with the authors sample graph. 
 	 * This value can be be passed to various methods of this class 
-	 * to indicate that that a graph of that type be created. 
+	 * to indicate that that a graph of that type be created or 
+	 * opened. 
 	 * 
 	 * @author ccjason (11/30/2014)
 	 */
@@ -385,7 +386,7 @@ public class CreateGraph {
 	 * 
 	 * @return Graph 
 	 */
-	private static Graph openGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
+	public static Graph openGraph(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException, InstantiationException, IllegalAccessException, ClassNotFoundException, AlreadyExistsException, NotFoundException, UnsupportedFActionException {
 		Graph g = _openGraph(graphtype, graphname, mapParams);
 
 		if (GRAPH_GBASE.equals(graphtype)) {
