@@ -17,7 +17,7 @@ import java.util.LinkedList;
  * <code>---xx...     </code> a commented out simple named flag 
  * <code>--key value  </code> a key value pair
  * <code>--xxkey value</code> a commented out key value pair
- * <code>-a</code> (or <code>-abc</code>)     single-letter flag(s) 
+ * <code>-a</code> (or <code>-abc</code>)   single-letter flag(s) 
  * </pre> 
  *  
  * Everything else is an position-sensitive parameter. 
