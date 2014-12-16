@@ -15,8 +15,8 @@ import java.util.LinkedList;
  *  
  * <code>---flag</code>        a named flag 
  * <code>---xx...</code>       a commented out simple named flag 
- * <code>--key value</code>    a key value pair 
- * <code>--xxkey value</code>  a commented out key value pair 
+ * <code>--key value</code>    a key value pair 1 
+ * <code>--xxkey value</code>  a commented out key value pair 1 
  * <code>-l</code> (or <code>-xyz</code>) single-letter flag(s) 
  * </pre> 
  *  
