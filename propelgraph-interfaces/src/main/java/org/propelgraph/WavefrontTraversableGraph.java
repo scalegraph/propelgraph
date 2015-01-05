@@ -44,5 +44,20 @@ public interface WavefrontTraversableGraph extends Graph {
      * @return Set<Vertex> 
      */
     public Set<Vertex> getVertices( Set<Vertex> setRootVertices, Direction direction, String label ) throws IOException;
+
+    /**
+     * behaves as {@link getVertices} except that the 
+     * setRootVertices parameter specifies the id of the vertices 
+     * rather than the Vertex pointer. 
+     * 
+     * @author ccjason (1/5/2015)
+     * 
+     * @param setRootVertices 
+     * @param direction 
+     * @param label 
+     * 
+     * @return Set<Vertex> 
+     */
+    public Set<Vertex> getVerticesByRootIds( Set<String> setRootVertices, Direction direction, String label) throws IOException;
 }
 
