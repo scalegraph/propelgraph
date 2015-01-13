@@ -1,8 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-To use this file, you need to rename it to be pom.xml and remove this line. Only do this if you understand the  (AGPL or Affero) license that Neo4j uses and the implications of it.  It is very likely that you will not want to use this once you understand that license. Nevertheless, we are providing this sample as a model of how to build a LocatableGraphFactory for an existing graph implementation.
- 
   <parent>
     <groupId>org.propelgraph</groupId>
     <artifactId>all</artifactId>
@@ -11,12 +8,12 @@ To use this file, you need to rename it to be pom.xml and remove this line. Only
   </parent>
 
   <groupId>org.propelgraph</groupId>
-  <artifactId>propelgraph-neo4j</artifactId>
+  <artifactId>propelgraph-titan</artifactId>
   <!-- version>2.4.0-SNAPSHOT</version inherit from parent -->
   <packaging>jar</packaging>
 
-  <name>PropelGraph Neo4j</name>
-  <description>Interfaces for Faster portable property graph - Neo4j </description>
+  <name>PropelGraph Titan</name>
+  <description>Interfaces for Faster portable property graph - Titan </description>
   <url>https://github.com/scalegraph/propelgraph</url>
 
   <issueManagement>
@@ -190,10 +187,16 @@ To use this file, you need to rename it to be pom.xml and remove this line. Only
     </dependency>
 
     <dependency>
-      <groupId>com.tinkerpop.blueprints</groupId>
-      <artifactId>blueprints-neo4j-graph</artifactId>
-      <version>2.4.0</version>
-    </dependency>
+	<groupId>com.thinkaurelius.titan</groupId>
+	<artifactId>titan-berkeleyje</artifactId>
+	<version>0.4.4</version>
+    </dependency>    
+    <dependency>
+	<groupId>com.thinkaurelius.titan</groupId>
+	<artifactId>titan-hbase</artifactId>
+	<version>0.4.4</version>
+    </dependency>    
+
     <!--dependency>
         <groupId>com.tinkerpop.blueprints</groupId>
         <artifactId>blueprints-core</artifactId>
@@ -233,12 +236,6 @@ To use this file, you need to rename it to be pom.xml and remove this line. Only
         <scope>test</scope>
     </dependency-->    
 
-    <dependency>
-      <groupId>com.tinkerpop.blueprints</groupId>
-      <artifactId>blueprints-test</artifactId>
-      <version>2.4.0</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <dependencyManagement>
