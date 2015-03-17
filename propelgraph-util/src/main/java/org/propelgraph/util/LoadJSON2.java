@@ -15,7 +15,7 @@ import java.io.InputStream;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonToken;
-import org.propelgraph.ClearableGraph;
+import org.propelgraph.LabeledVertexGraph;
 import org.propelgraph.GraphExternalVertexIdSupport;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Graph;
@@ -77,6 +77,10 @@ public class LoadJSON2 {
                 ((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
             }
         }
+		LabeledVertexGraph lvgraph = null;
+		if (g instanceof LabeledVertexGraph) {
+			lvgraph = (LabeledVertexGraph)g;
+		}
 
 		final int dographops = 2;
 		final boolean boolUseExternalId = true;
@@ -133,7 +137,11 @@ public class LoadJSON2 {
 					}
 					//logln("got vertex?");
 					if (v==null) {
-						v = g.addVertex(node_id);
+						if ((lvgraph==null) || (node_type==null)) {
+							v = g.addVertex(node_id);
+						} else {
+							v = lvgraph.addLabeledVertex(node_id,node_type);
+						}
 						// todo: set vertex class/label
 					} else {
 						cntPartialVerts--;
@@ -172,7 +180,11 @@ public class LoadJSON2 {
 						for (Vertex vv : viter) { vSource = vv; break; }
 					}
 					if (vEnd==null) {
-						vEnd = g.addVertex(end_node);
+						if ((lvgraph==null) || (end_node_type==null)) {
+							vEnd = g.addVertex(end_node);
+						} else {
+							vEnd = lvgraph.addLabeledVertex(end_node,end_node_type);
+						}
 						// todo: set vertex class/label
 						cntPartialVerts++;
 					}
@@ -188,7 +200,6 @@ public class LoadJSON2 {
 				} else {
 					throw new RuntimeException("not an edge or vertex?");
 				}
-
 			} else {
 				throw new RuntimeException("expected to start a json object");
 			}
