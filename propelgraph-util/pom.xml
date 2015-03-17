@@ -190,6 +190,11 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jasonnet</groupId>
+      <artifactId>jasonnet-logln</artifactId>
+      <version>0.5.0-SNAPSHOT</version>
+    </dependency>
     <!--dependency>
         <groupId>com.tinkerpop.blueprints</groupId>
         <artifactId>blueprints-core</artifactId>
@@ -205,7 +210,12 @@
         <artifactId>propelgraph-interfaces</artifactId>
         <version>2.4.0-SNAPSHOT</version>
     </dependency>
-    <!-- dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.5.1</version>
+    </dependency>
+<!-- dependency>
       <groupId>com.tinkerpop.gremlin</groupId>
       <artifactId>gremlin-groovy</artifactId>
       <version>2.4.0</version>

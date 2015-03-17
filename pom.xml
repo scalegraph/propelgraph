@@ -57,12 +57,25 @@
           <releases><enabled>false</enabled></releases>
           <snapshots><enabled>true</enabled></snapshots>
         </repository>
+        <repository>
+          <id>jasonnetorg_releases</id>
+          <url>http://maven.jasonnet.org/maven-repository/maven.jasonnet.org/releases/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>jasonnetorg_snapshots</id>
+          <url>http://maven.jasonnet.org/maven-repository/maven.jasonnet.org/snapshots/</url>
+          <releases><enabled>false</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
   </repositories>
 
     <modules>
       <module>propelgraph-interfaces</module>
       <module>propelgraph-memgraph</module>
       <!--module>propelgraph-neo4j</module    only uncomment this once you are aware of the implications of the license neo4j uses. -->
+      <module>propelgraph-titan</module>
       <module>propelgraph-tinkergraph</module>
       <module>propelgraph-util</module>
       <module>propelgraph-gremlin</module>
