@@ -135,6 +135,7 @@ public class LoadJSON2 {
 					if (v==null) {
 						v = g.addVertex(node_id);
 						// todo: set vertex class/label
+					} else {
 						cntPartialVerts--;
 					}
 					//logln("got vertex 2?");
