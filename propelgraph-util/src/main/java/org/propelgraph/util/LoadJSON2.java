@@ -245,7 +245,7 @@ public class LoadJSON2 {
 		} else {
 		}
 		*/
-		System.out.println("fetching url: "+url + " with Java RDF URL loader");
+		System.out.println("fetching url: "+url + " with Java JSON2 URL loader");
 		InputStream isWeb;
 		if (false) {
 			isWeb = url.openStream();
