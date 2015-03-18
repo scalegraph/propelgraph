@@ -206,14 +206,14 @@ public class LoadJSON2 {
 			cntWholeElements++;
 			if ((cntWholeElements%10000)==0){
 				long cntVerts = cntPartialVerts+cntWholeVerts;
-				long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps  );
+				long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(1+t1-t0), cntProps  );
 			}
 			if (cntWholeElements>=maxElements)	break;
 		}
 		jp.close();	// closes parser and underlying stream
 		{
 			long cntVerts = cntPartialVerts+cntWholeVerts;
-			long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps  );
+			long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(1+t1-t0), cntProps  );
 		}
 	}
 
