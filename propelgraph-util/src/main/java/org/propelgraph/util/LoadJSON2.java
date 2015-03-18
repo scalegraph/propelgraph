@@ -3,7 +3,7 @@ package org.propelgraph.util;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +58,11 @@ import com.tinkerpop.blueprints.Edge;
 public class LoadJSON2 {
 
 
+    HashMap<JsonParser.Feature,Boolean> htFeatures = new HashMap<JsonParser.Feature,Boolean>();
+    void configure( JsonParser.Feature feature, boolean val ) {
+	htFeatures.put( feature, val );
+    }
+
 	/**
 	 * add vertices and edges to the specified graph based on the content found
 	 * in the provided InputStream
@@ -75,7 +80,10 @@ public class LoadJSON2 {
             System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
             if (g instanceof KeyIndexableGraph) {
                 ((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
-            }
+		System.out.println(" _id index created");
+            } else {
+		    System.out.println("graph doesn't support the KeyIndexableGraph interface, so we can't index the _id column and must abort"); return;
+	    }
         }
 		LabeledVertexGraph lvgraph = null;
 		if (g instanceof LabeledVertexGraph) {
@@ -93,8 +101,10 @@ public class LoadJSON2 {
 		//VertexMapCache tm = new VertexMapCache(100);
 
 		JsonFactory jsonF = new JsonFactory();
-		JsonParser jp = jsonF.createJsonParser(is);
-
+		JsonParser jp = jsonF.createParser(is);
+		for (JsonParser.Feature feat : htFeatures.keySet()) {
+		    jp.configure( feat, htFeatures.get(feat).booleanValue());
+		}
 		if (jp.nextToken() != JsonToken.START_ARRAY) {
 			throw new IOException("Expected data to start with an Array");
 		}
@@ -142,7 +152,9 @@ public class LoadJSON2 {
 						} else {
 							v = lvgraph.addLabeledVertex(node_id,node_type);
 						}
-						// todo: set vertex class/label
+						if (!boolSupportsExIds) {
+						    v.setProperty("_id", node_id);
+						}
 					} else {
 						cntPartialVerts--;
 					}
@@ -255,7 +267,6 @@ public class LoadJSON2 {
 			connection.setRequestProperty("Accept-Encoding", "gzip");
 			//OutputStream osW = connection.getOutputStream();
 			InputStream isR1 = connection.getInputStream();
-			//InputStreamReader isr;
 			String sContEncoding = connection.getHeaderField("Content-Encoding");
 			if ((null!=sContEncoding) && sContEncoding.equals("gzip")) {
 				isWeb = new GZIPInputStream(isR1);
@@ -264,6 +275,29 @@ public class LoadJSON2 {
 			}
 		}
 		populateFromJSONStream(g,isWeb,max);
+		if (g instanceof TransactionalGraph) {
+			TransactionalGraph tg = (TransactionalGraph)g;
+			tg.commit();
+		}
+	}
+
+
+	/**
+	 * populate graph from the JSON data at the specified file.
+	 * 
+	 * @author ccjason (03/16/2015)
+	 * 
+	 * @param g the graph
+	 * @param strFN filename
+	 * @param graphshortname short name for this load that will be 
+	 *  		     listed in logs
+	 * @param max maximum number of triples to process
+	 */
+	public void populateFromFile(Graph g, String strFN, String graphshortname, long max) throws FileNotFoundException, IOException {
+		long t0 = System.currentTimeMillis();
+		System.out.println("fetching file: "+strFN + " with Java JSON2 file loader");
+		InputStream is = new FileInputStream(strFN);
+		populateFromJSONStream(g,is,max);
 		if (g instanceof TransactionalGraph) {
 			TransactionalGraph tg = (TransactionalGraph)g;
 			tg.commit();
