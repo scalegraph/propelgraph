@@ -186,7 +186,7 @@ public class LoadRDF {
     String predicate;
 
     List<Stmt> parseLine(String line) {
-	LinkedList retval = new LinkedList<Stmt>();
+	LinkedList<Stmt> retval = new LinkedList<Stmt>();
 	int idx = 0;
 	LParser lparser = new LParser(line);
 	while (true) {
