@@ -229,8 +229,9 @@ public class LoadCSV {
      * @param brWeb 
      * @param whichstream 
      * @param max 
+     * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
      */
-    public void populateFromCSVEdgeStream(Graph g, BufferedReader brWeb, String whichstream, long max) throws FileNotFoundException, IOException {
+    public void populateFromCSVEdgeStream(Graph g, BufferedReader brWeb, String whichstream, long max, String importantcolumns) throws FileNotFoundException, IOException {
 	//final int dographops = 2;
 	final boolean boolUseExternalId = true;
 	String line;
@@ -244,6 +245,14 @@ public class LoadCSV {
 	int  idxSrc = 0;
 	int idxDst = 1;
 	int idxLabel = 2;
+	if (importantcolumns!=null) {
+	    for (int iii = 0; iii<importantcolumns.length(); iii++) {
+		char c = importantcolumns.charAt(iii);
+		if (c=='s') idxSrc = iii;
+		if (c=='d') idxDst = iii;
+		if (c=='l') idxLabel = iii;
+	    }
+	}
 	GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
 	boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
 
@@ -428,8 +437,9 @@ public class LoadCSV {
      * @param strURL 
      * @param graphshortname 
      * @param max 
+     * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
      */
-    public void populateFromEdgeURL(Graph g, String strURL, String graphshortname, long max) throws FileNotFoundException, IOException {
+    public void populateFromEdgeURL(Graph g, String strURL, String graphshortname, long max, String importantcolumns) throws FileNotFoundException, IOException {
 	long t0 = System.currentTimeMillis();
 	URL url; 
 	{
@@ -457,7 +467,7 @@ public class LoadCSV {
 	}
 	BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
 	LoadCSV lcsv = new LoadCSV(); 
-	lcsv.populateFromCSVEdgeStream(g, brWeb, graphshortname, max); //JNIGen.println("ln 378");
+	lcsv.populateFromCSVEdgeStream(g, brWeb, graphshortname, max, importantcolumns); //JNIGen.println("ln 378");
 	brWeb.close();
 	isWeb.close();
 	if (g instanceof TransactionalGraph) {
@@ -474,8 +484,9 @@ public class LoadCSV {
      * @param fn 
      * @param graphshortname 
      * @param max 
+     * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
      */
-    public void populateFromEdgeFile(Graph g, String fn, String graphshortname, long max) throws FileNotFoundException, IOException {
+    public void populateFromEdgeFile(Graph g, String fn, String graphshortname, long max, String importantcolumns) throws FileNotFoundException, IOException {
 	long t0 = System.currentTimeMillis();
 	boolean done = false;
 	if (true) {
@@ -492,7 +503,7 @@ public class LoadCSV {
 	    is = new FileInputStream(fn);
 	    BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
 	    LoadCSV lcsv = new LoadCSV(); 
-	    lcsv.populateFromCSVEdgeStream(g, br, graphshortname, max); //JNIGen.println("ln 378");
+	    lcsv.populateFromCSVEdgeStream(g, br, graphshortname, max, importantcolumns); //JNIGen.println("ln 378");
 	    br.close();
 	    is.close();
 	}
