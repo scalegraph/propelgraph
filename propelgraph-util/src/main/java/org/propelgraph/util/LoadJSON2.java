@@ -58,10 +58,10 @@ import com.tinkerpop.blueprints.Edge;
 public class LoadJSON2 {
 
 
-    HashMap<JsonParser.Feature,Boolean> htFeatures = new HashMap<JsonParser.Feature,Boolean>();
-    void configure( JsonParser.Feature feature, boolean val ) {
-	htFeatures.put( feature, val );
-    }
+	HashMap<JsonParser.Feature,Boolean> htFeatures = new HashMap<JsonParser.Feature,Boolean>();
+	public void configure( JsonParser.Feature feature, boolean val ) {
+		htFeatures.put( feature, val );
+	}
 
 	/**
 	 * add vertices and edges to the specified graph based on the content found
@@ -201,12 +201,16 @@ public class LoadJSON2 {
 						cntPartialVerts++;
 					}
 					//Vertex vSource = g.getVertex(source_node); // required to be already defined earlier in the file
-					Edge edge = g.addEdge(edge_id, vSource, vEnd, edge_type);
-					for (Object kobj : hmRecord.keySet()) {
-						String key = (String)kobj;
-						Object val = hmRecord.get(key);
-						edge.setProperty(key,val);
-						cntProps++;
+					if (vSource==null) {
+						System.out.println("missing source vertex, skipping edge creation"); // we let it continue to run for the sake of debugging parsing
+					} else {
+						Edge edge = g.addEdge(edge_id, vSource, vEnd, edge_type);
+						for (Object kobj : hmRecord.keySet()) {
+							String key = (String)kobj;
+							Object val = hmRecord.get(key);
+							edge.setProperty(key,val);
+							cntProps++;
+						}
 					}
 					cntEdges++;
 				} else {
