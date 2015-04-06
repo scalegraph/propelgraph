@@ -59,6 +59,22 @@ public class LoadJSON2 {
 
 
 	HashMap<JsonParser.Feature,Boolean> htFeatures = new HashMap<JsonParser.Feature,Boolean>();
+	/**
+	 * adjust the JSON parser used by this class.  We have found 
+	 * that the following is often helpful: 
+	 * 
+	 * <pre>
+	 * {@code
+	 *   lj.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+	 *   lj.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+	 * }
+	 * </pre>
+	 * 
+	 * @author ccjason (4/6/2015)
+	 * 
+	 * @param feature 
+	 * @param val 
+	 */
 	public void configure( JsonParser.Feature feature, boolean val ) {
 		htFeatures.put( feature, val );
 	}
