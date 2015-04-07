@@ -59,7 +59,8 @@ import static org.jasonnet.logln.Logln.logln;
 public class LoadJSON2 {
 
 
-	HashSet<String> hsRecentEdgeExternalIds = new HashSet<String>();
+	HashSet<String> hsRecentEdgeExternalIds1 = new HashSet<String>();
+	HashSet<String> hsRecentEdgeExternalIds2 = new HashSet<String>();
 	HashMap<JsonParser.Feature,Boolean> htFeatures = new HashMap<JsonParser.Feature,Boolean>();
 	/**
 	 * adjust the JSON parser used by this class.  We have found 
@@ -87,7 +88,7 @@ public class LoadJSON2 {
 	 *  
 	 * This method skips adding vertices and edges that it's already 
 	 * seen.  In the case of edges, it checks for only the edges 
-	 * added in the previous invocation of this method of this 
+	 * added in the previous two invocation of this method of this 
 	 * object. 
 	 * 
 	 * @author ccjason (03/16/2015)
@@ -194,7 +195,7 @@ public class LoadJSON2 {
 					cntWholeVerts++;
 				} else if (hmRecord.containsKey("edge_type")) {
 					String edge_id = (String)hmRecord.get("edge_id");     hmRecord.remove("edge_id");
-					if (hsRecentEdgeExternalIds.contains(edge_id)) {
+					if (hsRecentEdgeExternalIds1.contains(edge_id) || hsRecentEdgeExternalIds2.contains(edge_id)) {
 						// redundant.  'skip.
 						//logln("skipping edge with exid of "+edge_id);
 					} else { 
@@ -263,7 +264,8 @@ public class LoadJSON2 {
 			long cntVerts = cntPartialVerts+cntWholeVerts;
 			long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(1+t1-t0), cntProps  );
 		}
-		hsRecentEdgeExternalIds = hsNewRecentEdgeExternalIds; // 
+		hsRecentEdgeExternalIds2 = hsRecentEdgeExternalIds1; // 
+		hsRecentEdgeExternalIds1 = hsNewRecentEdgeExternalIds; // 
 	}
 
 
