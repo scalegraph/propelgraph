@@ -90,17 +90,17 @@ public class LoadJSON2 {
 	 * @param max maximum number of elements to process
 	 */
 	void populateFromJSONStream(Graph g, InputStream is, long maxElements) throws IOException {
-        GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
-        boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
-        if (!boolSupportsExIds) {
-            System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
-            if (g instanceof KeyIndexableGraph) {
-                ((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
-		System.out.println(" _id index created");
-            } else {
-		    System.out.println("graph doesn't support the KeyIndexableGraph interface, so we can't index the _id column and must abort"); return;
-	    }
-        }
+		GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
+		boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
+		if (!boolSupportsExIds) {
+			System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
+			if (g instanceof KeyIndexableGraph) {
+				((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
+				System.out.println(" _id index created");
+			} else {
+				System.out.println("graph doesn't support the KeyIndexableGraph interface, so we can't index the _id column and must abort"); return;
+			}
+		}
 		LabeledVertexGraph lvgraph = null;
 		if (g instanceof LabeledVertexGraph) {
 			lvgraph = (LabeledVertexGraph)g;
