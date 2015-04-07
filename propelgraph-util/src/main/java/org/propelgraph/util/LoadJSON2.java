@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.zip.GZIPInputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -22,7 +23,7 @@ import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Edge;
-//import static org.jasonnet.logln.Logln.logln;
+import static org.jasonnet.logln.Logln.logln;
 
 /**
  * This class provides functionality for loading json graph 
@@ -58,6 +59,7 @@ import com.tinkerpop.blueprints.Edge;
 public class LoadJSON2 {
 
 
+	HashSet<String> hsRecentEdgeExternalIds = new HashSet<String>();
 	HashMap<JsonParser.Feature,Boolean> htFeatures = new HashMap<JsonParser.Feature,Boolean>();
 	/**
 	 * adjust the JSON parser used by this class.  We have found 
@@ -81,7 +83,12 @@ public class LoadJSON2 {
 
 	/**
 	 * add vertices and edges to the specified graph based on the content found
-	 * in the provided InputStream
+	 * in the provided InputStream 
+	 *  
+	 * This method skips adding vertices and edges that it's already 
+	 * seen.  In the case of edges, it checks for only the edges 
+	 * added in the previous invocation of this method of this 
+	 * object. 
 	 * 
 	 * @author ccjason (03/16/2015)
 	 * 
@@ -89,7 +96,7 @@ public class LoadJSON2 {
 	 * @param is is the input stream
 	 * @param max maximum number of elements to process
 	 */
-	void populateFromJSONStream(Graph g, InputStream is, long maxElements) throws IOException {
+	public void populateFromJSONStream(Graph g, InputStream is, long maxElements) throws IOException {
 		GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
 		boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
 		if (!boolSupportsExIds) {
@@ -115,6 +122,7 @@ public class LoadJSON2 {
 		long cntWholeElements = 0;
 		long t0 = System.currentTimeMillis();
 		//VertexMapCache tm = new VertexMapCache(100);
+		HashSet<String> hsNewRecentEdgeExternalIds = new HashSet<String>();
 
 		JsonFactory jsonF = new JsonFactory();
 		JsonParser jp = jsonF.createParser(is);
@@ -186,49 +194,57 @@ public class LoadJSON2 {
 					cntWholeVerts++;
 				} else if (hmRecord.containsKey("edge_type")) {
 					String edge_id = (String)hmRecord.get("edge_id");     hmRecord.remove("edge_id");
-					String edge_type = (String)hmRecord.get("edge_type"); hmRecord.remove("edge_type");
-					String end_node_type = (String)hmRecord.get("end_node_type"); hmRecord.remove("end_node_type");
-					String end_node = (String)hmRecord.get("end_node"); hmRecord.remove("end_node");
-					String source_node = (String)hmRecord.get("source_node"); hmRecord.remove("source_node");
-					Vertex vEnd, vSource; // = g.getVertex(end_node);
-					if (boolSupportsExIds) {
-						if (graph2!=null) {
-							vEnd = graph2.getVertexByExternalId(end_node);
-							vSource = graph2.getVertexByExternalId(source_node);
+					if (hsRecentEdgeExternalIds.contains(edge_id)) {
+						// redundant.  'skip.
+						//logln("skipping edge with exid of "+edge_id);
+					} else { 
+						//logln("not skipping edge with exid of "+edge_id);
+						hsNewRecentEdgeExternalIds.add(edge_id);
+						String edge_type = (String)hmRecord.get("edge_type"); hmRecord.remove("edge_type");
+						String end_node_type = (String)hmRecord.get("end_node_type"); hmRecord.remove("end_node_type");
+						String end_node = (String)hmRecord.get("end_node"); hmRecord.remove("end_node");
+						String source_node = (String)hmRecord.get("source_node"); hmRecord.remove("source_node");
+						Vertex vEnd, vSource; // = g.getVertex(end_node);
+						if (boolSupportsExIds) {
+							if (graph2!=null) {
+								vEnd = graph2.getVertexByExternalId(end_node);
+								vSource = graph2.getVertexByExternalId(source_node);
+							} else {
+								vEnd = g.getVertex(end_node);
+								vSource = g.getVertex(source_node);
+							}
 						} else {
-							vEnd = g.getVertex(end_node);
-							vSource = g.getVertex(source_node);
+							Iterable<Vertex> viter = g.getVertices("_id", end_node);
+							vEnd = null;
+							for (Vertex vv : viter) { vEnd = vv; break; }
+							viter = g.getVertices("_id", source_node);
+							vSource = null;
+							for (Vertex vv : viter) { vSource = vv; break; }
 						}
-					} else {
-						Iterable<Vertex> viter = g.getVertices("_id", end_node);
-						vEnd = null;
-						for (Vertex vv : viter) { vEnd = vv; break; }
-						viter = g.getVertices("_id", source_node);
-						vSource = null;
-						for (Vertex vv : viter) { vSource = vv; break; }
-					}
-					if (vEnd==null) {
-						if ((lvgraph==null) || (end_node_type==null)) {
-							vEnd = g.addVertex(end_node);
+						if (vEnd==null) {
+							if ((lvgraph==null) || (end_node_type==null)) {
+								vEnd = g.addVertex(end_node);
+							} else {
+								vEnd = lvgraph.addLabeledVertex(end_node,end_node_type);
+							}
+							// todo: set vertex class/label
+							cntPartialVerts++;
+						}
+						//Vertex vSource = g.getVertex(source_node); // required to be already defined earlier in the file
+						if (vSource==null) {
+							System.out.println("missing source vertex, skipping edge creation"); // we let it continue to run for the sake of debugging parsing
 						} else {
-							vEnd = lvgraph.addLabeledVertex(end_node,end_node_type);
+							Edge edge = g.addEdge(edge_id, vSource, vEnd, edge_type);
+							hsNewRecentEdgeExternalIds.add(edge_id);
+							for (Object kobj : hmRecord.keySet()) {
+								String key = (String)kobj;
+								Object val = hmRecord.get(key);
+								edge.setProperty(key,val);
+								cntProps++;
+							}
 						}
-						// todo: set vertex class/label
-						cntPartialVerts++;
+						cntEdges++;
 					}
-					//Vertex vSource = g.getVertex(source_node); // required to be already defined earlier in the file
-					if (vSource==null) {
-						System.out.println("missing source vertex, skipping edge creation"); // we let it continue to run for the sake of debugging parsing
-					} else {
-						Edge edge = g.addEdge(edge_id, vSource, vEnd, edge_type);
-						for (Object kobj : hmRecord.keySet()) {
-							String key = (String)kobj;
-							Object val = hmRecord.get(key);
-							edge.setProperty(key,val);
-							cntProps++;
-						}
-					}
-					cntEdges++;
 				} else {
 					throw new RuntimeException("not an edge or vertex?");
 				}
@@ -247,12 +263,15 @@ public class LoadJSON2 {
 			long cntVerts = cntPartialVerts+cntWholeVerts;
 			long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(1+t1-t0), cntProps  );
 		}
+		hsRecentEdgeExternalIds = hsNewRecentEdgeExternalIds; // 
 	}
 
 
 
 	/**
-	 * populate graph from the JSON data at the specified url.
+	 * populate graph from the JSON data at the specified url. 
+	 *  
+	 * @see populateFromJSONStream(Graph, InputStream, long )
 	 * 
 	 * @author ccjason (03/16/2015)
 	 * 
@@ -304,6 +323,8 @@ public class LoadJSON2 {
 
 	/**
 	 * populate graph from the JSON data at the specified file.
+	 *  
+	 * @see populateFromJSONStream(Graph, InputStream, long )
 	 * 
 	 * @author ccjason (03/16/2015)
 	 * 
