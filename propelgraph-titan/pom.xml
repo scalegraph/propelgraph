@@ -3,7 +3,8 @@
   <parent>
     <groupId>org.propelgraph</groupId>
     <artifactId>all</artifactId>
-    <version>2.4.0-SNAPSHOT</version>
+    <!--version>${tinkerpopVersion}-SNAPSHOT</version--><!--maven 3.3 doesn't seem to care what the version value is as long as it's there. -->
+    <version>ignoredbymaven</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -151,7 +152,7 @@
 	  <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
             <links>
-              <link>http://www.tinkerpop.com/docs/javadocs/blueprints/2.4.0/</link>
+              <link>http://www.tinkerpop.com/docs/javadocs/blueprints/${tinkerpopVersion}/</link>
               <link>http://scalegraph.github.io/propelgraph/propelgraph-interfaces/javadoc/</link>
             </links>
           </configuration>
@@ -200,22 +201,22 @@
     <!--dependency>
         <groupId>com.tinkerpop.blueprints</groupId>
         <artifactId>blueprints-core</artifactId>
-        <version>2.4.0</version>
+        <version>${tinkerpopVersion}</version>
     </dependency-->
     <!--dependency>
         <groupId>org.propelgraph</groupId>
         <artifactId>propelgraph-memgraph</artifactId>
-        <version>2.4.0-SNAPSHOT</version>
+        <version>${project.version}</version>
     </dependency-->
     <dependency>
         <groupId>org.propelgraph</groupId>
         <artifactId>propelgraph-interfaces</artifactId>
-        <version>2.4.0-SNAPSHOT</version>
+        <version>${project.version}</version>
     </dependency>
     <!-- dependency>
       <groupId>com.tinkerpop.gremlin</groupId>
       <artifactId>gremlin-groovy</artifactId>
-      <version>2.4.0</version>
+      <version>${tinkerpopVersion}</version>
     </dependency -->
 
     <!-- dependency>

@@ -25,6 +25,7 @@ import java.util.HashSet;
 
 public class MemVertex extends MemElement implements Vertex {
 	MemGraph g;
+	boolean removed = false;
 	MemEdge edgeOutFirst = null;
 	MemEdge edgeInFirst = null;
 	MemVertex vertNextGlobal;
@@ -54,6 +55,7 @@ public class MemVertex extends MemElement implements Vertex {
 	}
 
 	public void remove() {
+		if (removed) throw new IllegalStateException();
 		MemEdge e = edgeOutFirst;
 		while (e!=null) {
 			MemEdge eNext = e.nextFromSrc;
@@ -73,6 +75,7 @@ public class MemVertex extends MemElement implements Vertex {
 			vertPrevGlobal.vertNextGlobal = vertNextGlobal;
 			if (vertNextGlobal!=null) vertNextGlobal.vertPrevGlobal = vertPrevGlobal;
 		}
+		removed = true;
 	}
 
 	@Override

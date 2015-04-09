@@ -74,14 +74,15 @@
     <modules>
       <module>propelgraph-interfaces</module>
       <module>propelgraph-memgraph</module>
-      <!--module>propelgraph-neo4j</module    only uncomment this once you are aware of the implications of the license neo4j uses. -->
       <module>propelgraph-titan</module>
       <module>propelgraph-tinkergraph</module>
       <module>propelgraph-util</module>
       <module>propelgraph-gremlin</module>
+      <!--module>propelgraph-neo4j</module    only uncomment this once you are aware of the implications of the license neo4j uses. -->
     </modules>
     <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <tinkerpopVersion>2.4.0</tinkerpopVersion>
     </properties>
 
   <distributionManagement>

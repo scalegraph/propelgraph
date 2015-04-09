@@ -73,6 +73,7 @@ public class MemGraph implements Graph, KeyIndexableGraph, LocatableGraph {
 		FEATURES.supportsVertexProperties = true;
 		FEATURES.supportsEdgeProperties = true;
 		FEATURES.supportsThreadedTransactions = false;		
+		//FEATURES.supportsThreadIsolatedTransactions = false;  //TP2.5
 	}
 
 	public MemGraph( String dirpath, String graphname, MemGraph.MemGGraphType memggtype ) {
