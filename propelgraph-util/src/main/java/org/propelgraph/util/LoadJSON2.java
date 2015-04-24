@@ -58,6 +58,38 @@ import static org.jasonnet.logln.Logln.logln;
  */
 public class LoadJSON2 {
 
+	/**
+	 * 
+	 * 
+	 * @author ccjason (4/24/2015)
+	 */
+	static final String TITAN_PREFIX_PROPERTY = "p";
+	static final String TITAN_PREFIX_LABEL = "l";
+	boolean boolNeedPrefixes = false;
+
+	/**
+	 * configure the loader to prefix property names and label names 
+	 * with 'p' and 'l' respectively before loading.  This is to 
+	 * work around the limitation of graphs like Titan's that don't 
+	 * allow a graph's set of property names and label names to 
+	 * overlap. 
+	 *  
+	 * By default this flag is configured as false, but the caller 
+	 * should set this to true before invoing the loader if they are 
+	 * using a graph implementation like Titan's that has this 
+	 * restriction and the read graph might contain combinations of 
+	 * labels and property names that prevent the graph from being 
+	 * loaded by the graph implementation being used.
+	 * 
+	 * @author ccjason (4/24/2015)
+	 * 
+	 * @param newval 
+	 */
+	public void configureNeedPrefixes( boolean newval ) {
+		boolNeedPrefixes = true;
+	}
+
+
 
 	HashSet<String> hsRecentEdgeExternalIds1 = new HashSet<String>();
 	HashSet<String> hsRecentEdgeExternalIds2 = new HashSet<String>();
@@ -81,6 +113,8 @@ public class LoadJSON2 {
 	public void configure( JsonParser.Feature feature, boolean val ) {
 		htFeatures.put( feature, val );
 	}
+
+
 
 	/**
 	 * add vertices and edges to the specified graph based on the content found
@@ -166,7 +200,12 @@ public class LoadJSON2 {
 							v = g.getVertex(node_id);
 						}
 					} else {
-						Iterable<Vertex> viter = g.getVertices("_id", node_id);
+						Iterable<Vertex> viter;
+						if (boolNeedPrefixes) {
+							viter = g.getVertices( TITAN_PREFIX_PROPERTY+"_id", node_id);
+						} else {
+							viter = g.getVertices("_id", node_id);
+						}
 						v = null;
 						for (Vertex vv : viter) { v = vv; break; }
 					}
@@ -178,7 +217,11 @@ public class LoadJSON2 {
 							v = lvgraph.addLabeledVertex(node_id,node_type);
 						}
 						if (!boolSupportsExIds) {
-						    v.setProperty("_id", node_id);
+							if (boolNeedPrefixes) {
+								v.setProperty(TITAN_PREFIX_PROPERTY+"_id", node_id);
+							} else {
+								v.setProperty("_id", node_id);
+							}
 						}
 					} else {
 						cntPartialVerts--;
@@ -188,7 +231,11 @@ public class LoadJSON2 {
 						String key = (String)kobj;
 						//logln("set prop "+key);
 						Object val = hmRecord.get(key);
-						v.setProperty(key,val);
+						if (boolNeedPrefixes) {
+							v.setProperty(TITAN_PREFIX_PROPERTY + key, val);
+						} else {
+							v.setProperty(key,val);
+						}
 						cntProps++;
 					}
 					//logln("set props");
@@ -215,10 +262,19 @@ public class LoadJSON2 {
 								vSource = g.getVertex(source_node);
 							}
 						} else {
-							Iterable<Vertex> viter = g.getVertices("_id", end_node);
+							Iterable<Vertex> viter;
+							if (boolNeedPrefixes) {
+								viter = g.getVertices( TITAN_PREFIX_PROPERTY+"_id", end_node);
+							} else {
+								viter = g.getVertices("_id", end_node);
+							}
 							vEnd = null;
 							for (Vertex vv : viter) { vEnd = vv; break; }
-							viter = g.getVertices("_id", source_node);
+							if (boolNeedPrefixes) {
+								viter = g.getVertices( TITAN_PREFIX_PROPERTY+"_id", source_node);
+							} else {
+								viter = g.getVertices("_id", source_node);
+							}
 							vSource = null;
 							for (Vertex vv : viter) { vSource = vv; break; }
 						}
@@ -235,12 +291,21 @@ public class LoadJSON2 {
 						if (vSource==null) {
 							System.out.println("missing source vertex, skipping edge creation"); // we let it continue to run for the sake of debugging parsing
 						} else {
-							Edge edge = g.addEdge(edge_id, vSource, vEnd, edge_type);
+							Edge edge;
+							if (boolNeedPrefixes) {
+								 edge = g.addEdge(edge_id, vSource, vEnd, TITAN_PREFIX_LABEL + edge_type);
+							} else {
+								edge = g.addEdge(edge_id, vSource, vEnd, edge_type);
+							}
 							hsNewRecentEdgeExternalIds.add(edge_id);
 							for (Object kobj : hmRecord.keySet()) {
 								String key = (String)kobj;
 								Object val = hmRecord.get(key);
-								edge.setProperty(key,val);
+								if (boolNeedPrefixes) {
+									edge.setProperty(key, TITAN_PREFIX_PROPERTY + val);
+								} else {
+									edge.setProperty(key,val);
+								}
 								cntProps++;
 							}
 						}
