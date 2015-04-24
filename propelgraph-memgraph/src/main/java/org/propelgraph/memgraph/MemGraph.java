@@ -73,7 +73,10 @@ public class MemGraph implements Graph, KeyIndexableGraph, LocatableGraph {
 		FEATURES.supportsVertexProperties = true;
 		FEATURES.supportsEdgeProperties = true;
 		FEATURES.supportsThreadedTransactions = false;		
-		//FEATURES.supportsThreadIsolatedTransactions = false;  //TP2.5
+// prebop preprocessor used here:
+/* $if TINKERPOPVERSION >= 2.5.0$ 
+		FEATURES.supportsThreadIsolatedTransactions = false;  //TP2.5
+   $endif$ */
 	}
 
 	public MemGraph( String dirpath, String graphname, MemGraph.MemGGraphType memggtype ) {
