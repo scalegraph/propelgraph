@@ -97,7 +97,11 @@ public class MemGraph implements Graph, KeyIndexableGraph, LocatableGraph {
 
 	@Override
 	public Iterable<Edge> getEdges(String propname, Object propval) {
-		return new MemGlobalEdgeIterator(this, null, propname, propval.toString() );
+		if ("label".equals(propname)) {
+			return new MemGlobalEdgeIterator(this, propval.toString(), null, null );  // BP2.5 seems to treat label property differently
+		} else {
+			return new MemGlobalEdgeIterator(this, null, propname, propval.toString() );
+		}
 	}
 
 	@Override
@@ -202,6 +206,7 @@ public class MemGraph implements Graph, KeyIndexableGraph, LocatableGraph {
 
 	@Override
 	public <T extends Element> Set<String>  getIndexedKeys(Class<T> cls) {
+		if (cls==null) throw new IllegalArgumentException("cls must not be zero");
 		if (cls == Vertex.class) {
 			// todo: we can probably implement this faster by (1) caching the result or sometimes (2) use one call rather than polling
 			Set<String> retval = indicesForVerts.keySet();
@@ -214,12 +219,14 @@ public class MemGraph implements Graph, KeyIndexableGraph, LocatableGraph {
 	}
 	@Override
 	public <T extends Element> void dropKeyIndex(String key, Class<T> cls) {
+		if (cls==null) throw new IllegalArgumentException("cls can not be null"); // TP2.5 restriction
 		System.out.println("dropKeyIndex called");
 		//return null;
 	}
 	@Override
 	public <T extends Element> void createKeyIndex(String key, Class<T> cls, Parameter ...parms) {
 		System.out.println("createKeyIndex(key="+key+", cls="+cls+" params.length="+parms.length);
+		if (cls==null) throw new IllegalArgumentException("cls can not be null"); // TP2.5 restriction
 		if (cls == Vertex.class) {
 			if (indicesForVerts.containsKey(key)) throw new RuntimeException("key already exists");
 			//if (vertFirst!=null) throw new RuntimeException("don't yet support creating an index after elements have been created");
