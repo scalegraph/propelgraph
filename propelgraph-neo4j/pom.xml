@@ -6,8 +6,13 @@ To use this file, you need to rename it to be pom.xml and remove this line. Only
   <parent>
     <groupId>org.propelgraph</groupId>
     <artifactId>all</artifactId>
-    <!--version>${tinkerpopVersion}-SNAPSHOT</version--><!--maven 3.3 doesn't seem to care what the version value is as long as it's there. -->
-    <version>ignoredbymaven</version>
+<!-- $if PGVERSION == 2.4.0 $ -->
+    <version>2.4.0-SNAPSHOT</version>
+<!-- $elseif PGVERSION == 2.5.0 $
+    <version>2.5.0-SNAPSHOT</version>
+$elseif PGVERSION == 2.6.0 $
+    <version>2.6.0-SNAPSHOT</version>
+$endif $ -->
     <relativePath>../pom.xml</relativePath>
   </parent>
 
