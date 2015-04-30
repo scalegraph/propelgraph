@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.propelgraph</groupId>
     <artifactId>all</artifactId>
-<!-- $if PGVERSION == 2.4.0 $ -->
+<!-- $if PGVERSION == 2.4.0 $
     <version>2.4.0-SNAPSHOT</version>
-<!-- $elseif PGVERSION == 2.5.0 $
+$elseif PGVERSION == 2.5.0 $
     <version>2.5.0-SNAPSHOT</version>
-$elseif PGVERSION == 2.6.0 $
+$elseif PGVERSION == 2.6.0 $ -->
     <version>2.6.0-SNAPSHOT</version>
-$endif $ -->
+<!-- $endif $ -->
     <relativePath>../pom.xml</relativePath>
   </parent>
 
