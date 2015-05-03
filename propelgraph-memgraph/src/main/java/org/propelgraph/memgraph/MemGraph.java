@@ -76,7 +76,7 @@ public class MemGraph implements Graph, KeyIndexableGraph, LocatableGraph {
 // prebop/postbop preprocessor used here:
 /* $if TINKERPOPVERSION >= 2.6.0$ */
 		FEATURES.supportsThreadIsolatedTransactions = false;  //TP2.6, we can formally add support for multithreading later
-   /* $endif$ */
+/* $endif$ */
 	}
 
 	public MemGraph( String dirpath, String graphname, MemGraph.MemGGraphType memggtype ) {
