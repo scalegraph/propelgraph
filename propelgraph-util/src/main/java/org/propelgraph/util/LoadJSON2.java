@@ -18,11 +18,12 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonToken;
 import org.propelgraph.LabeledVertexGraph;
 import org.propelgraph.GraphExternalVertexIdSupport;
-import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Edge;
+import org.propelgraph.KeyIndexableGraphSupport;
+import org.propelgraph.KeyIndexableGraphSupportFactoryFactoryImpl;
 import static org.jasonnet.logln.Logln.logln;
 
 /**
@@ -136,8 +137,9 @@ public class LoadJSON2 {
 		boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
 		if (!boolSupportsExIds) {
 			System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
-			if (g instanceof KeyIndexableGraph) {
-				((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
+			KeyIndexableGraphSupport kk = KeyIndexableGraphSupportFactoryFactoryImpl.getKeyIndexableGraphSupport(g);
+			if (kk != null) {
+				kk.createKeyIndex("_id", Vertex.class);
 				System.out.println(" _id index created");
 			} else {
 				System.out.println("graph doesn't support the KeyIndexableGraph interface, so we can't index the _id column and must abort"); return;
