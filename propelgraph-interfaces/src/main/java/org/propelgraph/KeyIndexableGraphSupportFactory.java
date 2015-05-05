@@ -72,6 +72,7 @@ public class KeyIndexableGraphSupportFactory {
 			if ("com.thinkaurelius.titan.core.TitanGraph".equals(canname) || 
 				"com.thinkaurelius.titan.graphdb.database.StandardTitanGraph".equals(canname)
 			   ) {
+/* $if TINKERPOPVERSION >= 2.5.0$ */
 				Class classNowLoaded; 
 				try {
 					classNowLoaded = Class.forName("org.propelgraph.titan.TitanKeyIndexableGraphSupport"); 
@@ -81,6 +82,9 @@ public class KeyIndexableGraphSupportFactory {
 				}
 				Object obj = classNowLoaded.newInstance();
 				retval = (KeyIndexableGraphSupport)obj;
+/* $else$
+				retval = new SimpleKeyIndexableGraphSupport();
+ $endif$ */
 			} else {
 				retval = new SimpleKeyIndexableGraphSupport();
 			}

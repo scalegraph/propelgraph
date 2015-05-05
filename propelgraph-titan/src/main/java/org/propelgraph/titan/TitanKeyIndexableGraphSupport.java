@@ -8,11 +8,11 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Element;
 import com.tinkerpop.blueprints.Parameter;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanFactory;
+/* $if TINKERPOPVERSION >= 2.5.0$ */
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
 import com.thinkaurelius.titan.core.schema.TitanManagement; //Titan 0.5...
-import org.apache.commons.configuration.BaseConfiguration;
+/* $endif$ */
 import org.propelgraph.KeyIndexableGraphSupport;
 import java.util.Set;
 
@@ -37,6 +37,7 @@ public class TitanKeyIndexableGraphSupport implements KeyIndexableGraphSupport {
 
     @Override
 	public <T extends Element> void createKeyIndex(String key, Class<T> elementClass, final Parameter... indexParameters) {
+/* $if TINKERPOPVERSION >= 2.5.0$ */
 		TitanManagement mgmt = gr.getManagementSystem();
 		for (TitanGraphIndex idx : mgmt.getGraphIndexes(elementClass) ) {
 			PropertyKey fk[] = idx.getFieldKeys();
@@ -46,6 +47,9 @@ public class TitanKeyIndexableGraphSupport implements KeyIndexableGraphSupport {
 		}
 		PropertyKey pk = mgmt.makePropertyKey(key).dataType(String.class).make();
 		mgmt.buildIndex("pg:"+key+":"+elementClass,elementClass).addKey(pk).buildCompositeIndex();
+/* $else$ 
+		gr.createKeyIndex(key,elementClass,indexParameters);
+$endif$ */
     }
 
     @Override
