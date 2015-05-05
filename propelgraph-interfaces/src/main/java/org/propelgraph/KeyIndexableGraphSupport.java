@@ -63,4 +63,15 @@ public interface KeyIndexableGraphSupport {
 	 */
     public <T extends Element> Set<String> getIndexedKeys(Class<T> elementClass);
 	
+	/**
+	 * sets the graph that the object should act on behalf of. 
+	 *  
+	 * This method should be called immediately after the default 
+	 * constructor and not again. 
+	 * 
+	 * @author ccjason (5/4/2015)
+	 * 
+	 * @param graph 
+	 */
+	public void setGraph( Graph graph );
 }

@@ -23,7 +23,7 @@ import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Edge;
 import org.propelgraph.KeyIndexableGraphSupport;
-import org.propelgraph.KeyIndexableGraphSupportFactoryFactoryImpl;
+import org.propelgraph.KeyIndexableGraphSupportFactory;
 import static org.jasonnet.logln.Logln.logln;
 
 /**
@@ -137,10 +137,17 @@ public class LoadJSON2 {
 		boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
 		if (!boolSupportsExIds) {
 			System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
-			KeyIndexableGraphSupport kk = KeyIndexableGraphSupportFactoryFactoryImpl.getKeyIndexableGraphSupport(g);
+			String idkey = (boolNeedPrefixes) ? TITAN_PREFIX_PROPERTY+"_id" : "_id";
+			KeyIndexableGraphSupport kk;
+			try {
+				kk = KeyIndexableGraphSupportFactory.getKeyIndexableGraphSupport(g);
+			} catch (Exception exc) {
+				System.out.println("trouble creating index");
+				throw new RuntimeException("trouble creating index", exc);
+			}
 			if (kk != null) {
-				kk.createKeyIndex("_id", Vertex.class);
-				System.out.println(" _id index created");
+				kk.createKeyIndex(idkey, Vertex.class);
+				System.out.println(" "+idkey+" index created");
 			} else {
 				System.out.println("graph doesn't support the KeyIndexableGraph interface, so we can't index the _id column and must abort"); return;
 			}

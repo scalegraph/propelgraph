@@ -10,39 +10,85 @@
 */
 package org.propelgraph;
 
+import java.util.Set;
 import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Element;
+import com.tinkerpop.blueprints.Parameter;
+import com.tinkerpop.blueprints.KeyIndexableGraph;
 
 /**
- * Interface for classes that will create the 
- * KeyIndexableGraphSupport object. 
- *  
- * All implementations of this class should expect to be 
- * constructed with the default constructor.
- *  
- * Note: this interface is not of interest to most users.  It is 
- * used under the covers by 
- * {@KeyIndexableGraphSupportFactoryFactoryImpl}. 
- *  
- * @author ccjason
- *  
- * @see KeyIndexableGraphSupport 
- *  
+ * This class implements most of the glue needed to implement
+ * the KeyIndexableGraphSupportFactory support. 
+ * 
+ * @author ccjason (05/04/2015)
  */
-public interface KeyIndexableGraphSupportFactory {
 
+public class KeyIndexableGraphSupportFactory {
+
+	static class SimpleKeyIndexableGraphSupport implements KeyIndexableGraphSupport {
+		KeyIndexableGraph gr;
+
+		// default constructor
+		public SimpleKeyIndexableGraphSupport( ) {}
+
+		@Override
+		public void setGraph( Graph graph ) {
+			if (gr!=null) throw new RuntimeException("the graph has not been set");
+			gr = (KeyIndexableGraph)graph;
+		}
+
+		@Override
+		public <T extends Element> void dropKeyIndex(String key, Class<T> elementClass) {
+			gr.dropKeyIndex(key,elementClass);
+		}
+
+		@Override
+		public <T extends Element> void createKeyIndex(String key, Class<T> elementClass, final Parameter... indexParameters) {
+			gr.createKeyIndex(key, elementClass, indexParameters);
+		}
+
+		@Override
+		public <T extends Element> Set<String> getIndexedKeys(Class<T> elementClass) {
+			return gr.getIndexedKeys(elementClass);
+		}
+
+
+	}
 	/**
-	 * Returns a KeyIndexableGraphSupport object for the given 
-	 * Graph. 
-	 *  
-	 * Design: The implementation of this method is not likely to 
-	 * cache the value returned. 
+	 * returns an object that can act as the 
+	 * KeyIndexableGraphSupport object for the specified Graph 
+	 * object.
 	 * 
-	 * @author ccjason (5/4/2015)
+	 * @author ccjason (05/04/2015)
 	 * 
-	 * @param graph 
-	 * 
-	 * @return KeyIndexableGraphSupport 
+	 * @return KeyIndexableGraphSupport
 	 */
-	KeyIndexableGraphSupport getKeyIndexableGraphSupport( Graph graph );
+	public static final KeyIndexableGraphSupport getKeyIndexableGraphSupport( Graph graph ) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		if (graph==null) throw new NullPointerException();
+		if (graph instanceof KeyIndexableGraph ) {
+			String canname = graph.getClass().getCanonicalName();
+			System.out.println("graph class is "+canname);
+			KeyIndexableGraphSupport retval;
+			if ("com.thinkaurelius.titan.core.TitanGraph".equals(canname) || 
+				"com.thinkaurelius.titan.graphdb.database.StandardTitanGraph".equals(canname)
+			   ) {
+				Class classNowLoaded; 
+				try {
+					classNowLoaded = Class.forName("org.propelgraph.titan.TitanKeyIndexableGraphSupport"); 
+				} catch (ClassNotFoundException exc) {
+					System.out.println( "You probably need to adjust your classpath.  If you're using maven, uncomment the appropriate part of pom.xml.  The PGAPISamples's pom.xml for help." );
+					throw new ClassNotFoundException(exc.getMessage());
+				}
+				Object obj = classNowLoaded.newInstance();
+				retval = (KeyIndexableGraphSupport)obj;
+			} else {
+				retval = new SimpleKeyIndexableGraphSupport();
+			}
+			retval.setGraph( graph );
+			return retval;
+		} else {
+			return null; // unsupported (todo: return a more informative value)
+		}
+	}   
 
 }
