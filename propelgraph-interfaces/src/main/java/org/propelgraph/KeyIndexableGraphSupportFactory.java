@@ -63,7 +63,7 @@ public class KeyIndexableGraphSupportFactory {
 	 * 
 	 * @return KeyIndexableGraphSupport
 	 */
-	public static final KeyIndexableGraphSupport getKeyIndexableGraphSupport( Graph graph ) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public static final KeyIndexableGraphSupport getKeyIndexableGraphSupport( Graph graph ) /*throws ClassNotFoundException, InstantiationException, IllegalAccessException*/ {
 		if (graph==null) throw new NullPointerException();
 		if (graph instanceof KeyIndexableGraph ) {
 			String canname = graph.getClass().getCanonicalName();
@@ -77,10 +77,18 @@ public class KeyIndexableGraphSupportFactory {
 				try {
 					classNowLoaded = Class.forName("org.propelgraph.titan.TitanKeyIndexableGraphSupport"); 
 				} catch (ClassNotFoundException exc) {
-					System.out.println( "You probably need to adjust your classpath.  If you're using maven, uncomment the appropriate part of pom.xml.  The PGAPISamples's pom.xml for help." );
-					throw new ClassNotFoundException(exc.getMessage());
+					System.out.println( "You probably need to adjust your classpath.  If you're using maven, uncomment the appropriate part of pom.xml to pick up propelgraph-titan." );
+					throw new RuntimeException("You probably need to adjust your classpath.  If you're using maven, uncomment the appropriate part of pom.xml to pick up propelgraph-titan.", exc);
 				}
-				Object obj = classNowLoaded.newInstance();
+				Object obj;
+				try {
+					obj = classNowLoaded.newInstance();
+				} catch (InstantiationException exc) {
+					throw new RuntimeException("Internal Error", exc);
+				} catch (IllegalAccessException exc) {
+					// Why is IllegalAccessException not always a RuntimeException?
+					throw new RuntimeException("Internal Error", exc);
+				}
 				retval = (KeyIndexableGraphSupport)obj;
 /* $else$
 				retval = new SimpleKeyIndexableGraphSupport();

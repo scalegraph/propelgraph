@@ -30,6 +30,8 @@ import java.io.InputStream;
 import org.propelgraph.ClearableGraph;
 import org.propelgraph.GraphExternalVertexIdSupport;
 import org.propelgraph.CSVFileLoadingGraph;
+import org.propelgraph.KeyIndexableGraphSupport;
+import org.propelgraph.KeyIndexableGraphSupportFactory;
 import com.tinkerpop.blueprints.Features;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Graph;
@@ -131,386 +133,403 @@ public class LoadCSV {
      * @author ccjason (11/6/2014)
      * 
      * @param g The graph to modify.
-     * @param brWeb The stream providing the CSV content
+	 * @param brWeb The stream providing the CSV content 
+	 * @param idxId The index of the column that should be treated 
+	 *  			 as the id of the vertices-rows.  0 represents
+	 *  			 the first column.  negative values are illegal.
      * @param whichstream A label for the stream for the sake of 
      *  		  logging to stdout
      * @param max The maximum number of CSV lines to consume
      */
-    public void populateFromCSVVertexStream(Graph g, BufferedReader brWeb, String whichstream, long max) throws FileNotFoundException, IOException {
-	//final int dographops = 2;
-	final boolean boolUseExternalId = true;
-	String line;
-	long cntLines = 0;
-	long cntProps = 0;
-	long cntEdges = 0;
-	long cntVerts = 0;
-	//long cntStatements = 0;
-	long t0 = System.currentTimeMillis();
-	String fieldnames[] = null;
-	int  idxId = 0;
-	GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
-	boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
+	public void populateFromCSVVertexStream(Graph g, BufferedReader brWeb, int idxId, String whichstream, long max) throws FileNotFoundException, IOException {
+		//final int dographops = 2;
+		final boolean boolUseExternalId = true;
+		String line;
+		long cntLines = 0;
+		long cntProps = 0;
+		long cntEdges = 0;
+		long cntVerts = 0;
+		//long cntStatements = 0;
+		long t0 = System.currentTimeMillis();
+		String fieldnames[] = null;
+		//int  idxId = 0;
+		GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
+		boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
 
-	if (!boolSupportsExIds) {
-	    System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
-	    if (g instanceof KeyIndexableGraph) {
-		((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
-	    }
-	    
-	}
+		if (!boolSupportsExIds) {
+			System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
+			KeyIndexableGraphSupport kigs = KeyIndexableGraphSupportFactory.getKeyIndexableGraphSupport(g);
+			if (kigs != null) {
+				kigs.createKeyIndex("_id", Vertex.class);
+			}
 
-	//System.out.println("before readline");
-	while ((line=brWeb.readLine())!=null) { //System.out.println("popFOF126 "+line);
-	    cntLines++;
-	    if (0==(cntLines%10000)) System.out.println("line number "+cntLines);
-	    if (0==(cntLines%commit_frequency)) {
+		}
+
+		//System.out.println("before readline");
+		while ((line=brWeb.readLine())!=null) {	//System.out.println("popFOF126 "+line);
+			cntLines++;
+			if (0==(cntLines%10000)) System.out.println("line number "+cntLines);
+			if (0==(cntLines%commit_frequency)) {
+				if (g instanceof TransactionalGraph) {
+					// for the sake of Titan which run indexed lookup slow unless we commit occuasionally... even if just reading
+					((TransactionalGraph)g).commit();
+				}
+			}
+			//System.out.println(line);
+			//if (line.startsWith("#")) continue;
+			//if (line.startsWith("@prefix")) continue;
+			String fields[] = splitLineIntoArray(line);
+			if (cntLines==1) {
+				fieldnames = fields;
+			} else {
+				Vertex vert; 
+				if (boolSupportsExIds) {
+						if (graph2!=null) {
+							vert = graph2.getVertexByExternalId(fields[idxId]);
+						} else {
+							vert = g.getVertex(fields[idxId]);
+						}
+					}
+				else {
+					Iterable<Vertex> viter = g.getVertices("_id", fields[idxId]);
+					vert = null;
+					for (Vertex vv : viter) {
+						vert = vv; break;
+					}
+				}
+				if (vert==null) {
+					vert = g.addVertex(fields[idxId]);  cntVerts++;
+					if (!boolSupportsExIds) {
+						vert.setProperty("_id",fields[idxId]);
+					}
+				}
+				for (int i = 0; i<fieldnames.length; i++) {
+					if (i==idxId) {
+						// skip it
+					} else {
+						vert.setProperty(fieldnames[i],fields[i]); cntProps++;
+					}
+				}
+			}
+			if (cntLines>max) break;
+			if (cntLines%100000==1000) {
+				long t3 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  commit_freq=%d  %s \n", (t3-t0), cntEdges, cntVerts, cntVerts*1000L/(t3-t0), cntProps, cntLines, commit_frequency , whichstream );
+			}
+
+		}
+		long t1;
+		t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  %s   (before commit) \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps, cntLines, whichstream );
 		if (g instanceof TransactionalGraph) {
-		    // for the sake of Titan which run indexed lookup slow unless we commit occuasionally... even if just reading
-		    ((TransactionalGraph)g).commit();
+			// for the sake of Titan which run indexed lookup slow unless we commit occuasionally
+			((TransactionalGraph)g).commit();
 		}
-	    }
-	    //System.out.println(line);
-	    //if (line.startsWith("#")) continue;
-	    //if (line.startsWith("@prefix")) continue;
-	    String fields[] = splitLineIntoArray(line);
-	    if (cntLines==1) {
-		fieldnames = fields;
-	    } else {
-		Vertex vert; 
-		if (boolSupportsExIds) {
-		    if (graph2!=null) {
-			vert = graph2.getVertexByExternalId(fields[idxId]);
-		    } else {
-			vert = g.getVertex(fields[idxId]);
-		    }
-		} else {
-		    Iterable<Vertex> viter = g.getVertices("_id", fields[idxId]);
-		    vert = null;
-		    for (Vertex vv : viter) { vert = vv; break; }
-		}
-		if (vert==null) {
-		    vert = g.addVertex(fields[idxId]);  cntVerts++;
-		    if (!boolSupportsExIds) {
-			vert.setProperty("_id",fields[idxId]);
-		    }
-		}
-		for (int i = 0; i<fieldnames.length; i++) {
-		    if (i==idxId) {
-			// skip it
-		    } else {
-			vert.setProperty(fieldnames[i],fields[i]); cntProps++;
-		    }
-		}
-	    }
-	    if (cntLines>max) break;
-	    if (cntLines%100000==1000) { 
-		long t3 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  commit_freq=%d  %s \n", (t3-t0), cntEdges, cntVerts, cntVerts*1000L/(t3-t0), cntProps, cntLines, commit_frequency , whichstream );
-	    }
-
-	}
-	long t1;
-	t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  %s   (before commit) \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps, cntLines, whichstream );
-	if (g instanceof TransactionalGraph) {
-	    // for the sake of Titan which run indexed lookup slow unless we commit occuasionally
-	    ((TransactionalGraph)g).commit();
-	}
-	t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  %s   (after commit)  \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps, cntLines, whichstream );
-    }
-
-    /**
-     * Populate a graph from the provided CSV-formatted edge stream. 
-     * The columns should include a source vertex (external id), 
-     * destination vertex (external id), label.  All remaining 
-     * columns will be treated as properties on the edge. 
-     * 
-     * @author ccjason (11/6/2014)
-     * 
-     * @param g 
-     * @param brWeb 
-     * @param whichstream 
-     * @param max 
-     * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
-     */
-    public void populateFromCSVEdgeStream(Graph g, BufferedReader brWeb, String whichstream, long max, String importantcolumns) throws FileNotFoundException, IOException {
-	//final int dographops = 2;
-	final boolean boolUseExternalId = true;
-	String line;
-	long cntLines = 0;
-	long cntProps = 0;
-	long cntEdges = 0;
-	long cntVerts = 0;
-	//long cntStatements = 0;
-	long t0 = System.currentTimeMillis();
-	String fieldnames[] = null;
-	int  idxSrc = 0;
-	int idxDst = 1;
-	int idxLabel = 2;
-	if (importantcolumns!=null) {
-	    for (int iii = 0; iii<importantcolumns.length(); iii++) {
-		char c = importantcolumns.charAt(iii);
-		if (c=='s') idxSrc = iii;
-		if (c=='d') idxDst = iii;
-		if (c=='l') idxLabel = iii;
-	    }
-	}
-	GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
-	boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
-
-	if (!boolSupportsExIds) {
-	    System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
-	    if (g instanceof KeyIndexableGraph) {
-		((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
-	    }
-
+		t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  %s   (after commit)  \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps, cntLines, whichstream );
 	}
 
-	//System.out.println("before readline");
-	while ((line=brWeb.readLine())!=null) { //System.out.println("popFOF126 "+line);
-	    cntLines++;
-	    if (0==(cntLines%10000)) System.out.println("line number "+cntLines);
-	    if (0==(cntLines%commit_frequency)) {
+
+	/**
+	 * Populate a graph from the provided CSV-formatted edge stream. 
+	 * The columns should include a source vertex (external id), 
+	 * destination vertex (external id), label.  All remaining 
+	 * columns will be treated as properties on the edge. 
+	 * 
+	 * @author ccjason (11/6/2014)
+	 * 
+	 * @param g 
+	 * @param brWeb 
+	 * @param whichstream 
+	 * @param max 
+	 * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
+	 */
+	public void populateFromCSVEdgeStream(Graph g, BufferedReader brWeb, String whichstream, long max, String importantcolumns) throws FileNotFoundException, IOException {
+		//final int dographops = 2;
+		final boolean boolUseExternalId = true;
+		String line;
+		long cntLines = 0;
+		long cntProps = 0;
+		long cntEdges = 0;
+		long cntVerts = 0;
+		//long cntStatements = 0;
+		long t0 = System.currentTimeMillis();
+		String fieldnames[] = null;
+		int  idxSrc = 0;
+		int idxDst = 1;
+		int idxLabel = 2;
+		if (importantcolumns!=null) {
+			for (int iii = 0; iii<importantcolumns.length(); iii++) {
+				char c = importantcolumns.charAt(iii);
+				if (c=='s')	idxSrc = iii;
+				if (c=='d')	idxDst = iii;
+				if (c=='l')	idxLabel = iii;
+			}
+		}
+		GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
+		boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
+
+		if (!boolSupportsExIds) {
+			System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
+			if (g instanceof KeyIndexableGraph) {
+				((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
+			}
+
+		}
+
+		//System.out.println("before readline");
+		while ((line=brWeb.readLine())!=null) {	//System.out.println("popFOF126 "+line);
+			cntLines++;
+			if (0==(cntLines%10000)) System.out.println("line number "+cntLines);
+			if (0==(cntLines%commit_frequency)) {
+				if (g instanceof TransactionalGraph) {
+					// for the sake of Titan which run indexed lookup slow unless we commit occuasionally... even if just reading
+					((TransactionalGraph)g).commit();
+				}
+			}
+			//System.out.println(line);
+			//if (line.startsWith("#")) continue;
+			//if (line.startsWith("@prefix")) continue;
+			String fields[] = splitLineIntoArray(line);
+			if (cntLines==1) {
+				fieldnames = fields;
+			} else {
+				Vertex vertSrc = null; 
+				Vertex vertDst = null; 
+				if (boolSupportsExIds) {
+					if (graph2!=null) {
+						vertSrc = graph2.getVertexByExternalId(fields[idxSrc]);
+					} else {
+						vertSrc = g.getVertex(fields[idxSrc]);
+					}
+					if (g instanceof GraphExternalVertexIdSupport) {
+						vertDst = ((GraphExternalVertexIdSupport)g).getVertexByExternalId(fields[idxDst]);
+					} else {
+						vertDst = g.getVertex(fields[idxDst]);
+					}
+				} else {
+					Iterable<Vertex> viter = g.getVertices("_id", fields[idxSrc]);
+					for (Vertex vv : viter) {
+						vertSrc = vv; break;
+					}
+					viter = g.getVertices("_id", fields[idxDst]);
+					for (Vertex vv : viter) {
+						vertDst = vv; break;
+					}
+				}
+				if (vertSrc==null) {
+					vertSrc = g.addVertex(fields[idxSrc]);  cntVerts++;
+					if (!boolSupportsExIds) {
+						vertSrc.setProperty("_id", fields[idxSrc]);
+					}
+				}
+				if (vertDst==null) {
+					vertDst = g.addVertex(fields[idxDst]);  cntVerts++;
+					if (!boolSupportsExIds) {
+						vertDst.setProperty("_id", fields[idxDst]);
+					}
+				}
+				// we generate an id because graphs like TinkerGraph require a unique id.  Hopefully this will do the job
+				String edgeid = "a"+vertSrc.getId().toString()+" "+fields[idxLabel]+" "+vertDst.getId().toString();  
+				edgeid = line;	// a lot of lines would be duplicates with the id above and for today's test, we we think we want to treat them as different
+				//if (edgeid.equals("aDICT_ASSAY_1.1_1030_PUBCHEM_BIOASSAY VALIDATES DICT_CHEMICAL_1.1_C[C@H]1CCCC(=O)CCCC=Cc2cc(O)cc(O)c2C(=O)O1")) 
+				Edge edge = g.addEdge(edgeid, vertSrc, vertDst, fields[idxLabel]);  cntEdges++;
+				for (int i = 0; i<fieldnames.length; i++) {
+					if ( (i==idxSrc) || (i==idxDst) || (i==idxLabel) ) {
+						// skip it
+					} else if (i>=fields.length) {
+						System.err.println("skipping cell: extra columns found on line: "+line);
+					} else {
+						edge.setProperty(fieldnames[i],fields[i]); cntProps++;
+					}
+				}
+			}
+			if (cntLines>max) break;
+			if (cntLines%100000==1000) {
+				long t3 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  commit_freq=%d %s \n", (t3-t0), cntEdges, cntVerts, cntVerts*1000L/(t3-t0), cntProps, cntLines, commit_frequency, whichstream  );
+			}
+		}
+		long t1;
+		t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  %s   (before commit) \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps, cntLines, whichstream  );
 		if (g instanceof TransactionalGraph) {
-		    // for the sake of Titan which run indexed lookup slow unless we commit occuasionally... even if just reading
-		    ((TransactionalGraph)g).commit();
+			// for the sake of Titan which run indexed lookup slow unless we commit occuasionally
+			((TransactionalGraph)g).commit();
 		}
-	    }
-	    //System.out.println(line);
-	    //if (line.startsWith("#")) continue;
-	    //if (line.startsWith("@prefix")) continue;
-	    String fields[] = splitLineIntoArray(line);
-	    if (cntLines==1) {
-		fieldnames = fields;
-	    } else {
-		Vertex vertSrc = null; 
-		Vertex vertDst = null; 
-		if (boolSupportsExIds) {
-		    if (graph2!=null) {
-			vertSrc = graph2.getVertexByExternalId(fields[idxSrc]);
-		    } else {
-			vertSrc = g.getVertex(fields[idxSrc]);
-		    }
-		    if (g instanceof GraphExternalVertexIdSupport) {
-			vertDst = ((GraphExternalVertexIdSupport)g).getVertexByExternalId(fields[idxDst]);
-		    } else {
-			vertDst = g.getVertex(fields[idxDst]);
-		    }
-		} else {
-		    Iterable<Vertex> viter = g.getVertices("_id", fields[idxSrc]);
-		    for (Vertex vv : viter) { vertSrc = vv; break; }
-		    viter = g.getVertices("_id", fields[idxDst]);
-		    for (Vertex vv : viter) { vertDst = vv; break; }
-		}
-		if (vertSrc==null) {
-		    vertSrc = g.addVertex(fields[idxSrc]);  cntVerts++;
-		    if (!boolSupportsExIds) {
-			vertSrc.setProperty("_id", fields[idxSrc]);
-		    }
-		}
-		if (vertDst==null) {
-		    vertDst = g.addVertex(fields[idxDst]);  cntVerts++;
-		    if (!boolSupportsExIds) {
-			vertDst.setProperty("_id", fields[idxDst]);
-		    }
-		}
-		// we generate an id because graphs like TinkerGraph require a unique id.  Hopefully this will do the job
-		String edgeid = "a"+vertSrc.getId().toString()+" "+fields[idxLabel]+" "+vertDst.getId().toString();  
-		edgeid = line;  // a lot of lines would be duplicates with the id above and for today's test, we we think we want to treat them as different
-		//if (edgeid.equals("aDICT_ASSAY_1.1_1030_PUBCHEM_BIOASSAY VALIDATES DICT_CHEMICAL_1.1_C[C@H]1CCCC(=O)CCCC=Cc2cc(O)cc(O)c2C(=O)O1")) 
-		Edge edge = g.addEdge(edgeid, vertSrc, vertDst, fields[idxLabel]);  cntEdges++;
-		for (int i = 0; i<fieldnames.length; i++) {
-		    if ( (i==idxSrc) || (i==idxDst) || (i==idxLabel) ) {
-			// skip it
-		    } else if (i>=fields.length) {
-			System.err.println("skipping cell: extra columns found on line: "+line);
-		    } else {
-			edge.setProperty(fieldnames[i],fields[i]); cntProps++;
-		    }
-		}
-	    }
-	    if (cntLines>max) break;
-	    if (cntLines%100000==1000) {
-		long t3 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  commit_freq=%d %s \n", (t3-t0), cntEdges, cntVerts, cntVerts*1000L/(t3-t0), cntProps, cntLines, commit_frequency, whichstream  );
-	    }
+		t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  %s   (after commit) \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps, cntLines, whichstream  );
 	}
-	long t1;
-	t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  %s   (before commit) \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps, cntLines, whichstream  );
-	if (g instanceof TransactionalGraph) {
-	    // for the sake of Titan which run indexed lookup slow unless we commit occuasionally
-	    ((TransactionalGraph)g).commit();
-	}
-	t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  %s   (after commit) \n", (t1-t0), cntEdges, cntVerts, cntVerts*1000L/(t1-t0), cntProps, cntLines, whichstream  );
-    }
 
-    /**
-     * Populates the specified graph with csv-formatted vertex 
-     * information obtained from the specified web url.
-     * 
-     * @author ccjason (11/6/2014)
-     * 
-     * @param g 
-     * @param strURL 
-     * @param graphshortname 
-     * @param max 
-     */
-    public void populateFromVertexURL(Graph g, String strURL, String graphshortname, long max) throws FileNotFoundException, IOException {
-	long t0 = System.currentTimeMillis();
-	URL url; 
-	{
-	    //http://sg01.rescloud.ibm.com/ccjason/ldbm_csvs/parseout.www.php?filename=place.csv_ap
-	    //url = new URL("http://sg01.rescloud.ibm.com/ccjason/census_small/"+whichstatements+".ttl");
-	    url = new URL(strURL);
+	/**
+	 * Populates the specified graph with csv-formatted vertex 
+	 * information obtained from the specified web url.
+	 * 
+	 * @author ccjason (11/6/2014)
+	 * 
+	 * @param g 
+	 * @param strURL 
+	 * @param idxId The index of the column that should be treated 
+	 *  			 as the id of the vertices-rows.  0 represents
+	 *  			 the first column.  negative values are illegal.
+	 * @param graphshortname 
+	 * @param max 
+	 */
+	public void populateFromVertexURL(Graph g, String strURL, int idxId, String graphshortname, long max) throws FileNotFoundException, IOException {
+		long t0 = System.currentTimeMillis();
+		URL url; 
+		{
+			//http://sg01.rescloud.ibm.com/ccjason/ldbm_csvs/parseout.www.php?filename=place.csv_ap
+			//url = new URL("http://sg01.rescloud.ibm.com/ccjason/census_small/"+whichstatements+".ttl");
+			url = new URL(strURL);
+		}
+		System.out.println("fetching url: "+url + " with Java CSV URL loader");
+		InputStream isWeb;
+		if (false) {
+			isWeb = url.openStream();
+		} else { //JNIGen.println("ln 362");
+			URLConnection connection  = url.openConnection();
+			connection.setDoOutput(true);
+			connection.setRequestProperty("Accept-Encoding", "gzip");
+			//OutputStream osW = connection.getOutputStream();
+			InputStream isR1 = connection.getInputStream();
+			InputStreamReader isr;
+			String sContEncoding = connection.getHeaderField("Content-Encoding");
+			if ((null!=sContEncoding) && sContEncoding.equals("gzip")) {
+				isWeb = new GZIPInputStream(isR1);
+			} else {  //System.out.println("bbb");
+				isWeb = isR1;
+			}
+		}
+		BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
+		LoadCSV lcsv = new LoadCSV(); 
+		lcsv.populateFromCSVVertexStream(g, brWeb, idxId, graphshortname, max);	//JNIGen.println("ln 378");
+		brWeb.close();
+		isWeb.close();
+		if (g instanceof TransactionalGraph) {
+			TransactionalGraph tg = (TransactionalGraph)g;
+			tg.commit();
+		}long t1 = System.currentTimeMillis();  System.out.println("pFEU240 time="+(t1-t0)+"ms");
 	}
-	System.out.println("fetching url: "+url + " with Java CSV URL loader");
-	InputStream isWeb;
-	if (false) {
-	    isWeb = url.openStream();
-	} else { //JNIGen.println("ln 362");
-	    URLConnection connection  = url.openConnection();
-	    connection.setDoOutput(true);
-	    connection.setRequestProperty("Accept-Encoding", "gzip");
-	    //OutputStream osW = connection.getOutputStream();
-	    InputStream isR1 = connection.getInputStream();
-	    InputStreamReader isr;
-	    String sContEncoding = connection.getHeaderField("Content-Encoding");
-	    if ((null!=sContEncoding) && sContEncoding.equals("gzip")) {
-		isWeb = new GZIPInputStream(isR1);
-	    } else {  //System.out.println("bbb");
-		isWeb = isR1;
-	    }
-	}
-	BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
-	LoadCSV lcsv = new LoadCSV(); 
-	lcsv.populateFromCSVVertexStream(g, brWeb, graphshortname, max); //JNIGen.println("ln 378");
-	brWeb.close();
-	isWeb.close();
-	if (g instanceof TransactionalGraph) {
-	    TransactionalGraph tg = (TransactionalGraph)g;
-	    tg.commit();
-	} long t1 = System.currentTimeMillis();  System.out.println("pFEU240 time="+(t1-t0)+"ms");
-    }
 
-    /**
-     * Populates the specified graph with csv-formatted vertex 
-     * information obtained from the specified file.
-     * 
-     * @author ccjason (11/6/2014)
-     * 
-     * @param g 
-     * @param fn 
-     * @param graphshortname 
-     * @param max 
-     */
-    public void populateFromVertexFile(Graph g, String fn, String graphshortname, long max) throws FileNotFoundException, IOException {
-	long t0 = System.currentTimeMillis();
-	boolean done = false;
-	if (true) {
-	    if (g instanceof CSVFileLoadingGraph) {
-		System.out.println("fetching file: "+fn + " with C++ CSV file loader");
-		((CSVFileLoadingGraph)g).addCSVVertexFile(fn, max);
-		done = true;
-		long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms    %s   \n", (t1-t0), graphshortname  );
-	    }
+	/**
+	 * Populates the specified graph with csv-formatted vertex 
+	 * information obtained from the specified file.
+	 * 
+	 * @author ccjason (11/6/2014)
+	 * 
+	 * @param g 
+	 * @param fn 
+	 * @param idxId The index of the column that should be treated 
+	 *  			 as the id of the vertices-rows.  0 represents
+	 *  			 the first column.  negative values are illegal.
+	 * @param graphshortname 
+	 * @param max 
+	 */
+	public void populateFromVertexFile(Graph g, String fn, int idxId, String graphshortname, long max) throws FileNotFoundException, IOException {
+		long t0 = System.currentTimeMillis();
+		boolean done = false;
+		if (true) {
+			if (g instanceof CSVFileLoadingGraph) {
+				System.out.println("fetching file: "+fn + " with C++ CSV file loader");
+				((CSVFileLoadingGraph)g).addCSVVertexFile(fn, max);
+				done = true;
+				long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms    %s   \n", (t1-t0), graphshortname  );
+			}
+		}
+		if (!done) {
+			System.out.println("fetching file: "+fn + " with Java CSV file loader");
+			InputStream is;
+			is = new FileInputStream(fn);
+			BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
+			LoadCSV lcsv = new LoadCSV(); 
+			lcsv.populateFromCSVVertexStream(g, br, idxId, graphshortname, max); //JNIGen.println("ln 378");
+			br.close();
+			is.close();
+		}
+		if (g instanceof TransactionalGraph) {
+			TransactionalGraph tg = (TransactionalGraph)g;
+			tg.commit();
+		}long t1 = System.currentTimeMillis();  System.out.println("pFVF263 time="+(t1-t0)+"ms");
 	}
-	if (!done) {
-	    System.out.println("fetching file: "+fn + " with Java CSV file loader");
-	    InputStream is;
-	    is = new FileInputStream(fn);
-	    BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
-	    LoadCSV lcsv = new LoadCSV(); 
-	    lcsv.populateFromCSVVertexStream(g, br, graphshortname, max); //JNIGen.println("ln 378");
-	    br.close();
-	    is.close();
-	}
-	if (g instanceof TransactionalGraph) {
-	    TransactionalGraph tg = (TransactionalGraph)g;
-	    tg.commit();
-	} long t1 = System.currentTimeMillis();  System.out.println("pFVF263 time="+(t1-t0)+"ms");
-    }
 
-    /**
-     * Populates a graph from a CSV edge file at the specified Web 
-     * URL. 
-     * 
-     * @author ccjason (11/6/2014)
-     * 
-     * @param g 
-     * @param strURL 
-     * @param graphshortname 
-     * @param max 
-     * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
-     */
-    public void populateFromEdgeURL(Graph g, String strURL, String graphshortname, long max, String importantcolumns) throws FileNotFoundException, IOException {
-	long t0 = System.currentTimeMillis();
-	URL url; 
-	{
-	    //http://sg01.rescloud.ibm.com/ccjason/ldbm_csvs/parseout.www.php?filename=place.csv_ap
-	    //url = new URL("http://sg01.rescloud.ibm.com/ccjason/census_small/"+whichstatements+".ttl");
-	    url = new URL(strURL);
+	/**
+	 * Populates a graph from a CSV edge file at the specified Web 
+	 * URL. 
+	 * 
+	 * @author ccjason (11/6/2014)
+	 * 
+	 * @param g 
+	 * @param strURL 
+	 * @param graphshortname 
+	 * @param max 
+	 * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
+	 */
+	public void populateFromEdgeURL(Graph g, String strURL, String graphshortname, long max, String importantcolumns) throws FileNotFoundException, IOException {
+		long t0 = System.currentTimeMillis();
+		URL url; 
+		{
+			//http://sg01.rescloud.ibm.com/ccjason/ldbm_csvs/parseout.www.php?filename=place.csv_ap
+			//url = new URL("http://sg01.rescloud.ibm.com/ccjason/census_small/"+whichstatements+".ttl");
+			url = new URL(strURL);
+		}
+		System.out.println("fetching url: "+url + " with Java CSV URL loader");
+		InputStream isWeb;
+		if (false) {
+			isWeb = url.openStream();
+		} else { //JNIGen.println("ln 362");
+			URLConnection connection  = url.openConnection();
+			connection.setDoOutput(true);
+			connection.setRequestProperty("Accept-Encoding", "gzip");
+			//OutputStream osW = connection.getOutputStream();
+			InputStream isR1 = connection.getInputStream();
+			InputStreamReader isr;
+			String sContEncoding = connection.getHeaderField("Content-Encoding");
+			if ((null!=sContEncoding) && sContEncoding.equals("gzip")) {
+				isWeb = new GZIPInputStream(isR1);
+			} else {  //System.out.println("bbb");
+				isWeb = isR1;
+			}
+		}
+		BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
+		LoadCSV lcsv = new LoadCSV(); 
+		lcsv.populateFromCSVEdgeStream(g, brWeb, graphshortname, max, importantcolumns); //JNIGen.println("ln 378");
+		brWeb.close();
+		isWeb.close();
+		if (g instanceof TransactionalGraph) {
+			TransactionalGraph tg = (TransactionalGraph)g;
+			tg.commit();
+		}long t1 = System.currentTimeMillis();  System.out.println("pFEU308 time="+(t1-t0)+"ms");
 	}
-	System.out.println("fetching url: "+url + " with Java CSV URL loader");
-	InputStream isWeb;
-	if (false) {
-	    isWeb = url.openStream();
-	} else { //JNIGen.println("ln 362");
-	    URLConnection connection  = url.openConnection();
-	    connection.setDoOutput(true);
-	    connection.setRequestProperty("Accept-Encoding", "gzip");
-	    //OutputStream osW = connection.getOutputStream();
-	    InputStream isR1 = connection.getInputStream();
-	    InputStreamReader isr;
-	    String sContEncoding = connection.getHeaderField("Content-Encoding");
-	    if ((null!=sContEncoding) && sContEncoding.equals("gzip")) {
-		isWeb = new GZIPInputStream(isR1);
-	    } else {  //System.out.println("bbb");
-		isWeb = isR1;
-	    }
+	/**
+	 * Populates graph with content from a CSV file.
+	 * 
+	 * @author ccjason (11/6/2014)
+	 * 
+	 * @param g 
+	 * @param fn 
+	 * @param graphshortname 
+	 * @param max 
+	 * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
+	 */
+	public void populateFromEdgeFile(Graph g, String fn, String graphshortname, long max, String importantcolumns) throws FileNotFoundException, IOException {
+		long t0 = System.currentTimeMillis();
+		boolean done = false;
+		if (true) {
+			if (g instanceof CSVFileLoadingGraph) {
+				System.out.println("fetching file: "+fn + " with C++ CSV file loader");
+				((CSVFileLoadingGraph)g).addCSVEdgeFile(fn, max);
+				done = true;
+				long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms    %s   \n", (t1-t0), graphshortname  );
+			}
+		}
+		if (!done) {
+			System.out.println("fetching file: "+fn + " with Java CSV file loader");
+			InputStream is;
+			is = new FileInputStream(fn);
+			BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
+			LoadCSV lcsv = new LoadCSV(); 
+			lcsv.populateFromCSVEdgeStream(g, br, graphshortname, max, importantcolumns); //JNIGen.println("ln 378");
+			br.close();
+			is.close();
+		}
+		if (g instanceof TransactionalGraph) {
+			TransactionalGraph tg = (TransactionalGraph)g;
+			tg.commit();
+		}long t1 = System.currentTimeMillis();  System.out.println("pFEF331 time="+(t1-t0)+"ms");
 	}
-	BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
-	LoadCSV lcsv = new LoadCSV(); 
-	lcsv.populateFromCSVEdgeStream(g, brWeb, graphshortname, max, importantcolumns); //JNIGen.println("ln 378");
-	brWeb.close();
-	isWeb.close();
-	if (g instanceof TransactionalGraph) {
-	    TransactionalGraph tg = (TransactionalGraph)g;
-	    tg.commit();
-	} long t1 = System.currentTimeMillis();  System.out.println("pFEU308 time="+(t1-t0)+"ms");
-    }
-    /**
-     * Populates graph with content from a CSV file.
-     * 
-     * @author ccjason (11/6/2014)
-     * 
-     * @param g 
-     * @param fn 
-     * @param graphshortname 
-     * @param max 
-     * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
-     */
-    public void populateFromEdgeFile(Graph g, String fn, String graphshortname, long max, String importantcolumns) throws FileNotFoundException, IOException {
-	long t0 = System.currentTimeMillis();
-	boolean done = false;
-	if (true) {
-	    if (g instanceof CSVFileLoadingGraph) {
-		System.out.println("fetching file: "+fn + " with C++ CSV file loader");
-		((CSVFileLoadingGraph)g).addCSVEdgeFile(fn, max);
-		done = true;
-		long t1 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms    %s   \n", (t1-t0), graphshortname  );
-	    }
-	}
-	if (!done) {
-	    System.out.println("fetching file: "+fn + " with Java CSV file loader");
-	    InputStream is;
-	    is = new FileInputStream(fn);
-	    BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
-	    LoadCSV lcsv = new LoadCSV(); 
-	    lcsv.populateFromCSVEdgeStream(g, br, graphshortname, max, importantcolumns); //JNIGen.println("ln 378");
-	    br.close();
-	    is.close();
-	}
-	if (g instanceof TransactionalGraph) {
-	    TransactionalGraph tg = (TransactionalGraph)g;
-	    tg.commit();
-	}   long t1 = System.currentTimeMillis();  System.out.println("pFEF331 time="+(t1-t0)+"ms");
-    }
-
 }
