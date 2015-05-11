@@ -137,12 +137,28 @@ public class LoadCSV {
 	 * @param idxId The index of the column that should be treated 
 	 *  			 as the id of the vertices-rows.  0 represents
 	 *  			 the first column.  negative values are illegal.
+	 * @param idxLabel The index of the label that should be treated 
+	 *  			 as the class of the vertices-rows.  0
+	 *  			 represents the first column. -1 indicates that
+	 *  			 there is no label such column.  (At this date
+	 *  			 this column is ignored because Blueprints 2.x
+	 *  			 and PropelGraph do not have an interface for
+	 *  			 contructing vertices with labels. This will
+	 *  			 change with Blueprints 3.x.)
      * @param whichstream A label for the stream for the sake of 
      *  		  logging to stdout
      * @param max The maximum number of CSV lines to consume
      */
-	public void populateFromCSVVertexStream(Graph g, BufferedReader brWeb, int idxId, String whichstream, long max) throws FileNotFoundException, IOException {
+	public void populateFromCSVVertexStream(Graph g, BufferedReader brWeb, int idxId, int idxLabel, String whichstream, long max) throws FileNotFoundException, IOException {
 		//final int dographops = 2;
+		if (idxLabel>=0) {
+			try {
+				throw new Exception("idxLabel not currently supported");
+			} catch (Exception exc) {
+				System.out.println(exc);
+				exc.printStackTrace();
+			}
+		}
 		final boolean boolUseExternalId = true;
 		String line;
 		long cntLines = 0;
@@ -366,10 +382,18 @@ public class LoadCSV {
 	 * @param idxId The index of the column that should be treated 
 	 *  			 as the id of the vertices-rows.  0 represents
 	 *  			 the first column.  negative values are illegal.
+	 * @param idxLabel The index of the label that should be treated 
+	 *  			 as the class of the vertices-rows.  0
+	 *  			 represents the first column. -1 indicates that
+	 *  			 there is no label such column.  (At this date
+	 *  			 this column is ignored because Blueprints 2.x
+	 *  			 and PropelGraph do not have an interface for
+	 *  			 contructing vertices with labels. This will
+	 *  			 change with Blueprints 3.x.)
 	 * @param graphshortname 
 	 * @param max 
 	 */
-	public void populateFromVertexURL(Graph g, String strURL, int idxId, String graphshortname, long max) throws FileNotFoundException, IOException {
+	public void populateFromVertexURL(Graph g, String strURL, int idxId, int idxLabel, String graphshortname, long max) throws FileNotFoundException, IOException {
 		long t0 = System.currentTimeMillis();
 		URL url; 
 		{
@@ -397,7 +421,7 @@ public class LoadCSV {
 		}
 		BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
 		LoadCSV lcsv = new LoadCSV(); 
-		lcsv.populateFromCSVVertexStream(g, brWeb, idxId, graphshortname, max);	//JNIGen.println("ln 378");
+		lcsv.populateFromCSVVertexStream(g, brWeb, idxId, idxLabel, graphshortname, max);	//JNIGen.println("ln 378");
 		brWeb.close();
 		isWeb.close();
 		if (g instanceof TransactionalGraph) {
@@ -417,10 +441,18 @@ public class LoadCSV {
 	 * @param idxId The index of the column that should be treated 
 	 *  			 as the id of the vertices-rows.  0 represents
 	 *  			 the first column.  negative values are illegal.
+	 * @param idxLabel The index of the label that should be treated 
+	 *  			 as the class of the vertices-rows.  0
+	 *  			 represents the first column. -1 indicates that
+	 *  			 there is no label such column.  (At this date
+	 *  			 this column is ignored because Blueprints 2.x
+	 *  			 and PropelGraph do not have an interface for
+	 *  			 contructing vertices with labels. This will
+	 *  			 change with Blueprints 3.x.)
 	 * @param graphshortname 
 	 * @param max 
 	 */
-	public void populateFromVertexFile(Graph g, String fn, int idxId, String graphshortname, long max) throws FileNotFoundException, IOException {
+	public void populateFromVertexFile(Graph g, String fn, int idxId, int idxLabel, String graphshortname, long max) throws FileNotFoundException, IOException {
 		long t0 = System.currentTimeMillis();
 		boolean done = false;
 		if (true) {
@@ -437,7 +469,7 @@ public class LoadCSV {
 			is = new FileInputStream(fn);
 			BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
 			LoadCSV lcsv = new LoadCSV(); 
-			lcsv.populateFromCSVVertexStream(g, br, idxId, graphshortname, max); //JNIGen.println("ln 378");
+			lcsv.populateFromCSVVertexStream(g, br, idxId, idxLabel, graphshortname, max); //JNIGen.println("ln 378");
 			br.close();
 			is.close();
 		}
