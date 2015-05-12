@@ -56,7 +56,7 @@ public class TitanKeyIndexableGraphSupport implements KeyIndexableGraphSupport {
 		PropertyKey pk = mgmt.makePropertyKey(key).dataType(String.class).make();
 		mgmt.buildIndex( indexname,elementClass).addKey(pk).buildCompositeIndex();
 		mgmt.commit();
-/* $else$ 
+/* $else$
 		gr.createKeyIndex(key,elementClass,indexParameters);
 $endif$ */
     }

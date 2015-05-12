@@ -5,11 +5,11 @@
   <artifactId>all</artifactId>
 <!-- $if PGVERSION == 2.4.0 $
     <version>2.4.0-SNAPSHOT</version>
-$elseif PGVERSION == 2.5.0 $
+$elseif PGVERSION == 2.5.0 $ -->
     <version>2.5.0-SNAPSHOT</version>
-$elseif PGVERSION == 2.6.0 $ -->
+<!-- $elseif PGVERSION == 2.6.0 $
     <version>2.6.0-SNAPSHOT</version>
-<!-- $endif $ -->
+$endif $ -->
   <packaging>pom</packaging>
 
   <name>PropelGraph All</name>
@@ -90,11 +90,11 @@ $elseif PGVERSION == 2.6.0 $ -->
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 <!-- $if PGVERSION == 2.4.0 $
       <tinkerpopVersion>2.4.0</tinkerpopVersion>
-$elseif PGVERSION == 2.5.0 $
+$elseif PGVERSION == 2.5.0 $ -->
       <tinkerpopVersion>2.5.0</tinkerpopVersion>
-$elseif PGVERSION == 2.6.0 $ -->
+<!-- $elseif PGVERSION == 2.6.0 $
       <tinkerpopVersion>2.6.0</tinkerpopVersion>
-<!-- $endif $ -->
+$endif $ -->
     </properties>
 
   <distributionManagement>

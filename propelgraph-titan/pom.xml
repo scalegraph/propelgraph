@@ -5,11 +5,11 @@
     <artifactId>all</artifactId>
 <!-- $if PGVERSION == 2.4.0 $
     <version>2.4.0-SNAPSHOT</version>
-$elseif PGVERSION == 2.5.0 $
+$elseif PGVERSION == 2.5.0 $ -->
     <version>2.5.0-SNAPSHOT</version>
-$elseif PGVERSION == 2.6.0 $ -->
+<!-- $elseif PGVERSION == 2.6.0 $
     <version>2.6.0-SNAPSHOT</version>
-<!-- $endif $ -->
+$endif $ -->
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -204,11 +204,11 @@ $elseif PGVERSION == 2.6.0 $ -->
 <!-- I don't think they produced a BP 2.6.0 version of Titan -->
 <!-- $if PGVERSION == 2.4.0 $
      <version>0.4.4</version>
-$elseif PGVERSION == 2.5.0 $
+$elseif PGVERSION == 2.5.0 $ -->
     <version>0.5.4</version>
-$elseif PGVERSION == 2.6.0 $ -->
+<!-- $elseif PGVERSION == 2.6.0 $
     <version>0.5.4</version>
-<!-- $endif $ -->
+$endif $ -->
     </dependency>    
     <dependency>
 	<groupId>com.thinkaurelius.titan</groupId>
@@ -216,11 +216,11 @@ $elseif PGVERSION == 2.6.0 $ -->
 <!-- I don't think they produced a BP 2.6.0 version of Titan -->
 <!-- $if PGVERSION == 2.4.0 $
      <version>0.4.4</version>
-$elseif PGVERSION == 2.5.0 $
+$elseif PGVERSION == 2.5.0 $ -->
     <version>0.5.4</version>
-$elseif PGVERSION == 2.6.0 $ -->
+<!-- $elseif PGVERSION == 2.6.0 $
     <version>0.5.4</version>
-<!-- $endif $ -->
+$endif $ -->
     </dependency>    
 
     <!--dependency>
