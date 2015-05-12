@@ -15,6 +15,7 @@ import com.thinkaurelius.titan.core.schema.TitanManagement; //Titan 0.5...
 /* $endif$ */
 import org.propelgraph.KeyIndexableGraphSupport;
 import java.util.Set;
+//import static org.jasonnet.logln.Logln.logln;
 
 public class TitanKeyIndexableGraphSupport implements KeyIndexableGraphSupport {
 
@@ -37,16 +38,24 @@ public class TitanKeyIndexableGraphSupport implements KeyIndexableGraphSupport {
 
     @Override
 	public <T extends Element> void createKeyIndex(String key, Class<T> elementClass, final Parameter... indexParameters) {
+		//logln("t  key="+key+"  ");
 /* $if TINKERPOPVERSION >= 2.5.0$ */
+		String indexname = "pg:"+key+":"+elementClass; //logln("indexname will be "+indexname);
 		TitanManagement mgmt = gr.getManagementSystem();
 		for (TitanGraphIndex idx : mgmt.getGraphIndexes(elementClass) ) {
+			//logln("t");
 			PropertyKey fk[] = idx.getFieldKeys();
+			//logln(""+(fk.length));
+			//logln(""+(fk[0].getName()));
 			if ((fk.length==1) && fk[0].getName().equals(key)) {
+				//logln("exists");
 				return ; // it already exists
 			}
 		}
+		//logln("making index starting with the key");
 		PropertyKey pk = mgmt.makePropertyKey(key).dataType(String.class).make();
-		mgmt.buildIndex("pg:"+key+":"+elementClass,elementClass).addKey(pk).buildCompositeIndex();
+		mgmt.buildIndex( indexname,elementClass).addKey(pk).buildCompositeIndex();
+		mgmt.commit();
 /* $else$ 
 		gr.createKeyIndex(key,elementClass,indexParameters);
 $endif$ */

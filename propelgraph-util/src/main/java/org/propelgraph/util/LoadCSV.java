@@ -39,6 +39,7 @@ import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Edge;
 //import com.ibm.research.systemg.nativestore.JNIGen;
+//import static org.jasonnet.logln.Logln.logln;
 
 /**
  * This class provides functionality for loading CSV files.  It 
@@ -56,7 +57,7 @@ public class LoadCSV {
     //static final int commit_frequency = 0x0001000;  // Titan likes a value of about 32, others prefer to make this infinite
 
 
-    LinkedList<String> splitLine(String line) {
+	LinkedList<String> splitLine(String line) {
 	int state = 0; // start of field
 	// = 1;  // have created field, but might have some characters before the comma or eol
 	LinkedList<String> lls = new LinkedList<String>();
@@ -178,7 +179,6 @@ public class LoadCSV {
 			if (kigs != null) {
 				kigs.createKeyIndex("_id", Vertex.class);
 			}
-
 		}
 
 		//System.out.println("before readline");
@@ -262,10 +262,10 @@ public class LoadCSV {
 	 * @param intTgt 
 	 * @param whichstream 
 	 * @param max 
-	 * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
 	 */
-	public void populateFromCSVEdgeStream(Graph g, BufferedReader brWeb, int idxLabel, int idxSrc, int idxTgt, String whichstream, long max, String importantcolumns) throws FileNotFoundException, IOException {
+	public void populateFromCSVEdgeStream(Graph g, BufferedReader brWeb, int idxLabel, int idxSrc, int idxTgt, String whichstream, long max ) throws FileNotFoundException, IOException {
 		//final int dographops = 2;
+		//logln("m");
 		final boolean boolUseExternalId = true;
 		String line;
 		long cntLines = 0;
@@ -278,24 +278,20 @@ public class LoadCSV {
 		//int  idxSrc = 0;
 		int idxDst = idxTgt;
 		//int idxLabel = 2;
-		if (importantcolumns!=null) {
-			for (int iii = 0; iii<importantcolumns.length(); iii++) {
-				char c = importantcolumns.charAt(iii);
-				if (c=='s')	idxSrc = iii;
-				if (c=='d')	idxDst = iii;
-				if (c=='l')	idxLabel = iii;
-			}
-		}
+
 		GraphExternalVertexIdSupport graph2 = g instanceof GraphExternalVertexIdSupport ? (GraphExternalVertexIdSupport)g : null;
+		//logln("m");
 		boolean boolSupportsExIds = (! g.getFeatures().ignoresSuppliedIds) || (graph2 != null);
+		//logln("m");
 
 		if (!boolSupportsExIds) {
 			System.out.println("Warning: This graph implementation does not support external ids so we will be using the _id property instead.  We'll try to request indexing of that column here.  That really should be done in the caller if the graph might already contain content.");
-			if (g instanceof KeyIndexableGraph) {
-				((KeyIndexableGraph)g).createKeyIndex("_id", Vertex.class);
+			KeyIndexableGraphSupport kigs = KeyIndexableGraphSupportFactory.getKeyIndexableGraphSupport(g);
+			if (kigs != null) {
+				kigs.createKeyIndex("_id", Vertex.class);
 			}
-
 		}
+		//logln("m");
 
 		//System.out.println("before readline");
 		while ((line=brWeb.readLine())!=null) {	//System.out.println("popFOF126 "+line);
@@ -328,6 +324,7 @@ public class LoadCSV {
 						vertDst = g.getVertex(fields[idxDst]);
 					}
 				} else {
+					//logln("m");
 					Iterable<Vertex> viter = g.getVertices("_id", fields[idxSrc]);
 					for (Vertex vv : viter) {
 						vertSrc = vv; break;
@@ -337,13 +334,16 @@ public class LoadCSV {
 						vertDst = vv; break;
 					}
 				}
+				//logln("m");
 				if (vertSrc==null) {
+					//logln("av");
 					vertSrc = g.addVertex(fields[idxSrc]);  cntVerts++;
 					if (!boolSupportsExIds) {
 						vertSrc.setProperty("_id", fields[idxSrc]);
 					}
 				}
 				if (vertDst==null) {
+					//logln("av");
 					vertDst = g.addVertex(fields[idxDst]);  cntVerts++;
 					if (!boolSupportsExIds) {
 						vertDst.setProperty("_id", fields[idxDst]);
@@ -364,6 +364,7 @@ public class LoadCSV {
 					}
 				}
 			}
+			//logln("m");
 			if (cntLines>max) break;
 			if (cntLines%100000==1000) {
 				long t3 = System.currentTimeMillis();   System.out.printf("loadtime=%8d ms     edges=%8d     verts=%8d(%7d/sec)    props=%8d   lines=%8d  commit_freq=%d %s \n", (t3-t0), cntEdges, cntVerts, cntVerts*1000L/(t3-t0), cntProps, cntLines, commit_frequency, whichstream  );
@@ -503,9 +504,8 @@ public class LoadCSV {
 	 * @param intTgt 
 	 * @param graphshortname 
 	 * @param max 
-	 * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
 	 */
-	public void populateFromEdgeURL(Graph g, String strURL, int idxLabel, int idxSrc, int idxTgt, String graphshortname, long max, String importantcolumns) throws FileNotFoundException, IOException {
+	public void populateFromEdgeURL(Graph g, String strURL, int idxLabel, int idxSrc, int idxTgt, String graphshortname, long max) throws FileNotFoundException, IOException {
 		long t0 = System.currentTimeMillis();
 		URL url; 
 		{
@@ -533,7 +533,7 @@ public class LoadCSV {
 		}
 		BufferedReader brWeb = new BufferedReader( new InputStreamReader(isWeb, "UTF-8")); //JNIGen.println("ln 376");
 		LoadCSV lcsv = new LoadCSV(); 
-		lcsv.populateFromCSVEdgeStream(g, brWeb, idxLabel, idxSrc, idxTgt, graphshortname, max, importantcolumns); //JNIGen.println("ln 378");
+		lcsv.populateFromCSVEdgeStream(g, brWeb, idxLabel, idxSrc, idxTgt, graphshortname, max ); //JNIGen.println("ln 378");
 		brWeb.close();
 		isWeb.close();
 		if (g instanceof TransactionalGraph) {
@@ -557,9 +557,8 @@ public class LoadCSV {
 	 * @param intTgt 
 	 * @param graphshortname 
 	 * @param max 
-	 * @param importantcolumns  A string specifying what columns to interpret as source, destination and label.  If null is passed then "sdl" is assumed which means the first column is the source, the second is the destination vertex id, and the third is the label.
 	 */
-	public void populateFromEdgeFile(Graph g, String fn, int idxLabel, int idxSrc, int idxTgt, String graphshortname, long max, String importantcolumns) throws FileNotFoundException, IOException {
+	public void populateFromEdgeFile(Graph g, String fn, int idxLabel, int idxSrc, int idxTgt, String graphshortname, long max) throws FileNotFoundException, IOException {
 		long t0 = System.currentTimeMillis();
 		boolean done = false;
 		if (true) {
@@ -576,7 +575,7 @@ public class LoadCSV {
 			is = new FileInputStream(fn);
 			BufferedReader br = new BufferedReader( new InputStreamReader(is, "UTF-8")); //JNIGen.println("ln 376");
 			LoadCSV lcsv = new LoadCSV(); 
-			lcsv.populateFromCSVEdgeStream(g, br, idxLabel, idxSrc, idxTgt, graphshortname, max, importantcolumns); //JNIGen.println("ln 378");
+			lcsv.populateFromCSVEdgeStream(g, br, idxLabel, idxSrc, idxTgt, graphshortname, max); //JNIGen.println("ln 378");
 			br.close();
 			is.close();
 		}
