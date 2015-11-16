@@ -292,19 +292,20 @@ public class CreateGraph {
 	 * @param g 
 	 */
 	public static void addAuthorInfo(Graph g) {
-		Vertex vAnneHathaway = g.addVertex(null); vAnneHathaway.setProperty("name","Anne Hathaway");
+		Vertex vAnneHathaway = g.addVertex(null); vAnneHathaway.setProperty("name","Anne Hathaway"); vAnneHathaway.setProperty("importance", new Double(33.5));
 		Vertex vShakespeare = g.addVertex(null);
 		vShakespeare.setProperty("name","William Shakespeare");
 		vShakespeare.setProperty("yearOfDeath", new Integer(1616) );
-		Vertex vPlayRomeo = g.addVertex(null);    vPlayRomeo.setProperty("name", "Romeo And Juliet");  vPlayRomeo.setProperty("yearPublished", new Integer(1599) );
+		vShakespeare.setProperty("importance", new Double(55.5) );
+		Vertex vPlayRomeo = g.addVertex(null);    vPlayRomeo.setProperty("name", "Romeo And Juliet");  vPlayRomeo.setProperty("yearPublished", new Integer(1599) ); vPlayRomeo.setProperty("importance", new Double(44.3) );
 		vShakespeare.addEdge("wrote",vPlayRomeo);
-		Vertex vPlayJulius = g.addVertex(null);   vPlayJulius.setProperty("name", "Julius Caesear");   vPlayJulius.setProperty("yearPublished", new Integer(1599) );
+		Vertex vPlayJulius = g.addVertex(null);   vPlayJulius.setProperty("name", "Julius Caesear");   vPlayJulius.setProperty("yearPublished", new Integer(1599) ); vPlayJulius.setProperty("importance", new Double(45.2) );
 		vShakespeare.addEdge("wrote",vPlayJulius);
-		Vertex vPlayMacbeth = g.addVertex(null);  vPlayMacbeth.setProperty("name","Macbeth");         vPlayMacbeth.setProperty("yearPublished", new Integer(1623));
+		Vertex vPlayMacbeth = g.addVertex(null);  vPlayMacbeth.setProperty("name","Macbeth");         vPlayMacbeth.setProperty("yearPublished", new Integer(1623)); vPlayMacbeth.setProperty("importance", new Double(49.1) );
 		vShakespeare.addEdge("wrote",vPlayMacbeth);
 		vShakespeare.addEdge("married",vAnneHathaway).setProperty("yearOfWedding", new Integer(1582) );
-		Vertex vMelville = g.addVertex(null);     vMelville.setProperty("name", "Herman Melville");  vMelville.addEdge("influencedBy", vShakespeare);  vMelville.setProperty("yearOfBirth", new Integer(1819) );
-		Vertex vDickens = g.addVertex(null);      vDickens.setProperty("name", "Charles Dickens"); vDickens.addEdge("influencedBy", vShakespeare);  vDickens.setProperty("yearOfBirth", new Integer(1812) );
+		Vertex vMelville = g.addVertex(null);     vMelville.setProperty("name", "Herman Melville");  vMelville.addEdge("influencedBy", vShakespeare);  vMelville.setProperty("yearOfBirth", new Integer(1819) ); vMelville.setProperty("importance", new Double(52.1) );
+		Vertex vDickens = g.addVertex(null);      vDickens.setProperty("name", "Charles Dickens"); vDickens.addEdge("influencedBy", vShakespeare);  vDickens.setProperty("yearOfBirth", new Integer(1812) ); vDickens.setProperty("importance", new Double(54.1) );
 		vAnneHathaway.addEdge("likes",vShakespeare).setProperty("weight",new Double(0.78));
 		vMelville.addEdge("likes",vShakespeare).setProperty("weight",new Double(0.58));
 
