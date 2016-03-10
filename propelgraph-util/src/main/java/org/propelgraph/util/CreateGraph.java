@@ -41,7 +41,7 @@ import com.tinkerpop.blueprints.KeyIndexableGraph;
  *  
  * <pre> 
  * {@code 
- *   Graph g = CreateGraph.openGraph( CreateGraph.GRAPH_TINKERMEM,
+ *   Graph g = CreateGraph.openGraph( CreateGraph.GRAPH_TINKERMEM, ...)
  * } 
  * </pre> 
  * 
@@ -124,6 +124,14 @@ public class CreateGraph {
 	 */
 	public static final String GRAPH_NATIVEMEM = "nativemem";
 	/**
+	 * A transactional JNI-based graph from IBM Research. This value
+	 * can be be passed to various methods of this class to indicate
+	 * that that a graph of that type be created or opened. 
+	 * 
+	 * @author ccjason (03/09/2016)
+	 */
+	public static final String GRAPH_SGTRANS = "sgtrans";
+	/**
 	 * An in-memory graph from the PropelGraph project. This value
 	 * can be be passed to various methods of this class to indicate 
 	 * that that a graph of that type be created or opened. 
@@ -140,6 +148,15 @@ public class CreateGraph {
 	 * @author ccjason (11/30/2014)
 	 */
 	public static final String GRAPH_NATIVEMEMAUTHORS = "nativemem_authors";
+	/**
+	 * An nativemem graph initialized with the authors sample graph. 
+	 * This value can be be passed to various methods of this class 
+	 * to indicate that that a graph of that type be created or 
+	 * opened. 
+	 * 
+	 * @author ccjason (11/30/2014)
+	 */
+	public static final String GRAPH_SGTRANSAUTHORS = "sgtrans_authors";
 
 	/**
 	 * returns a locatable graph urlstring for the specified 
@@ -171,12 +188,16 @@ public class CreateGraph {
 			return "pggraph:org.propelgraph.tinkergraph.TinkerGraphLocatableGraphFactory/?&graphname=memory&tggraphtype=INMEMORY"; 
 		} else if (GRAPH_PROPELMEM.equals(graphtype)) {
 			return "pggraph:org.propelgraph.memgraph.MemLocatableGraphFactory/?&graphname=memory&dirpath=propelmem&mggraphtype=INMEMORY";
+		} else if (GRAPH_SGTRANS.equals(graphtype)) {
+			return "pggraph:com.ibm.research.systemg.transstore.tinkerpop.TSLocatableGraphFactory/?&graphname="+graphname+"&dirpath=transstore&tsgraphtype=PERSISTENT";
 		} else if (GRAPH_NATIVESTORE.equals(graphtype)) {
 			return "pggraph:com.ibm.research.systemg.nativestore.tinkerpop.NSLocatableGraphFactory/?&graphname="+graphname+"&dirpath=nativestore&nsgraphtype=PERSISTENT";
 		} else if (GRAPH_NATIVEMEM.equals(graphtype)) {
 			return "pggraph:com.ibm.research.systemg.nativestore.tinkerpop.NSLocatableGraphFactory/?&graphname="+graphname+"&dirpath=nativemem&nsgraphtype=INMEMORY";
 		} else if (GRAPH_NATIVEMEMAUTHORS.equals(graphtype)) {
 			return "pggraph:com.ibm.research.systemg.nativestore.tinkerpop.NSLocatableGraphFactory/?&graphname="+graphname+"&dirpath=nativemem&nsgraphtype=INMEMORY&initializewith=authors";
+		} else if (GRAPH_SGTRANSAUTHORS.equals(graphtype)) {
+			return "pggraph:com.ibm.research.systemg.transstore.tinkerpop.TSLocatableGraphFactory/?&graphname="+graphname+"&dirpath=transstore&tsgraphtype=PERSISTENT&initializewith=authors";
 		} else {
 			throw new RuntimeException("illegal graph store: "+graphtype);
 		}
@@ -197,6 +218,10 @@ public class CreateGraph {
 			return LocatableGraphFactory.FACTION_NEW_NEW;
 		} else if (GRAPH_PROPELMEM.equals(graphtype)) {
 			return LocatableGraphFactory.FACTION_NEW_NEW;
+		} else if (GRAPH_SGTRANS.equals(graphtype)) {
+			return(null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
+		} else if (GRAPH_SGTRANSAUTHORS.equals(graphtype)) {
+			return LocatableGraphFactory.FACTION_CREATE_OPEN;
 		} else if (GRAPH_NATIVESTORE.equals(graphtype)) {
 			return(null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
 		} else if (GRAPH_NATIVEMEM.equals(graphtype)) {
@@ -246,6 +271,10 @@ public class CreateGraph {
 			    Graph retval = openGraph(graphtype,graphname,mapParams);
 			    //mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_NEWLYCREATED);
 			    return retval;
+			} else if (GRAPH_SGTRANSAUTHORS.equals(graphtype) || false ) {
+					Graph retval = openGraph(graphtype,graphname,mapParams);
+					//mapParams.put(GRAPHHINT_IS_EMPTY,GRAPHHINT_IS_NEWLYCREATED);
+					return retval;
 		    } else if (gf instanceof DeleteableGraphFactory) {
 			    ((DeleteableGraphFactory)gf).delete(graphurl);
 			    Graph retval = openGraph(graphtype,graphname,mapParams);
@@ -457,7 +486,13 @@ public class CreateGraph {
 			mapParams.put(GRAPHHINT_IS_NEWLYPOPULATED,GRAPHHINT_IS_NEWLYPOPULATED);
 			addAuthorInfo(g);
 			return g;
+		} else if (GRAPH_SGTRANSAUTHORS.equals(graphtype)) {
+			mapParams.put(GRAPHHINT_IS_NEWLYPOPULATED,GRAPHHINT_IS_NEWLYPOPULATED);
+			addAuthorInfo(g);
+			return g;
 		} else if (GRAPH_NATIVESTORE.equals(graphtype)) {
+			return g;
+		} else if (GRAPH_SGTRANS.equals(graphtype)) {
 			return g;
 		} else {
 			throw new RuntimeException("illegal graph store: "+graphtype);
