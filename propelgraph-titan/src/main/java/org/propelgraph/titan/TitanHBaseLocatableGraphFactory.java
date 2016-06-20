@@ -1,4 +1,4 @@
-package org.proopelgraph.titan;
+package org.propelgraph.titan;
 
 import java.io.File;
 
