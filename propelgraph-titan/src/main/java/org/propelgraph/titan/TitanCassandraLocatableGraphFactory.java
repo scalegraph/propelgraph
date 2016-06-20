@@ -1,4 +1,4 @@
-package com.ibm.research.systemg.tinkerpop.blueprints.titan;
+package org.proopelgraph.titan;
 
 import java.io.File;
 
