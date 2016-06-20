@@ -191,7 +191,7 @@ public class CreateGraph {
 		} else if (GRAPH_TITANHBASE.equals(graphtype)) {
 			return "pggraph:org.propelgraph.titan.TitanHBaseLocatableGraphFactory/?&graphname="+graphname+"&store=hbase&hostname="+(mapParams.get("--hostname"));
 		} else if (GRAPH_TITANCASSANDRA.equals(graphtype)) {
-			return "pggraph:org.propelgraph.titan.TitanCassandraLocatableGraphFactory/?&graphname="+graphname+"&store=hbase&hostname="+(mapParams.get("--hostname"));
+			return "pggraph:org.propelgraph.titan.TitanCassandraLocatableGraphFactory/?&graphname="+graphname+"&store=cassandra&hostname="+(mapParams.get("--hostname"));
 		} else if (GRAPH_TITANBERK.equals(graphtype)) {
 			return "pggraph:org.propelgraph.titan.TitanBerkeleyLocatableGraphFactory/?&graphname="+graphname+"&store=berkdb&dirpath=titanbstores";
 		} else if (GRAPH_TINKERMEM.equals(graphtype)) {
