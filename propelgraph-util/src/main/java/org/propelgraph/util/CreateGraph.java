@@ -89,6 +89,14 @@ public class CreateGraph {
 	 */
 	public static final String GRAPH_TITANHBASE = "titanhbase";
 	/**
+	 * A Cassandra-based Titan graph. This value can be be passed to
+	 * various methods of this class to indicate that that a graph 
+	 * of that type be created or opened. 
+	 * 
+	 * @author ccjason (06/20/2016)
+	 */
+	public static final String GRAPH_TITANCASSANDRA = "titancass";
+	/**
 	 * A BerkeleyDB-based Titan graph. This value can be be passed 
 	 * to various methods of this class to indicate that that a 
 	 * graph of that type be created or opened. 
@@ -182,6 +190,8 @@ public class CreateGraph {
 			throw new RuntimeException("do not yet support this type of constructor for db2rdf graph");
 		} else if (GRAPH_TITANHBASE.equals(graphtype)) {
 			return "pggraph:org.propelgraph.titan.TitanHBaseLocatableGraphFactory/?&graphname="+graphname+"&store=hbase&hostname="+(mapParams.get("--hostname"));
+		} else if (GRAPH_TITANCASSANDRA.equals(graphtype)) {
+			return "pggraph:org.propelgraph.titan.TitanCassandraLocatableGraphFactory/?&graphname="+graphname+"&store=hbase&hostname="+(mapParams.get("--hostname"));
 		} else if (GRAPH_TITANBERK.equals(graphtype)) {
 			return "pggraph:org.propelgraph.titan.TitanBerkeleyLocatableGraphFactory/?&graphname="+graphname+"&store=berkdb&dirpath=titanbstores";
 		} else if (GRAPH_TINKERMEM.equals(graphtype)) {
@@ -211,6 +221,8 @@ public class CreateGraph {
 		} else if (GRAPH_DB2RDF.equals(graphtype)) {
 			throw new RuntimeException("do not yet support this type of constructor for db2rdf graph");
 		} else if (GRAPH_TITANHBASE.equals(graphtype)) {
+			return(null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
+		} else if (GRAPH_TITANCASSANDRA.equals(graphtype)) {
 			return(null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
 		} else if (GRAPH_TITANBERK.equals(graphtype)) {
 			return(null!=mapParams.get("---cleargraph")) ? LocatableGraphFactory.FACTION_CREATE_EMPTY : LocatableGraphFactory.FACTION_CREATE_OPEN;
@@ -447,6 +459,15 @@ public class CreateGraph {
 			// tbd
 			throw new RuntimeException("db2rdf constructor not yet implemented");
 		} else if (GRAPH_TITANHBASE.equals(graphtype)) {
+			//BaseConfiguration conf = new BaseConfiguration();
+			//conf.setProperty("storage.backend","hbase");
+			//conf.setProperty("storage.hostname",hbasehost);
+			//conf.setProperty("storage.tablename","titan"+graphname);
+			//TitanGraph g = TitanFactory.open(conf);
+			//g.createKeyIndex(idPropForId, Vertex.class);
+			//g.loadGraphML('data/onevertex.xml')
+			return g;
+		} else if (GRAPH_TITANCASSANDRA.equals(graphtype)) {
 			//BaseConfiguration conf = new BaseConfiguration();
 			//conf.setProperty("storage.backend","hbase");
 			//conf.setProperty("storage.hostname",hbasehost);
