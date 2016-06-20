@@ -6,7 +6,7 @@
 #
 # Before executing this script, 
 #   - cd to the appropriate subproject directory 
-#   - invoke   mvn clean install
+#   - invoke   mvn clean install     or   mvn clean package (if one likes to install elsewhere, (see our 2.4, 2.5, 2.6 deploy process))
 #      This should insure that the target/apidocs directory is populated with the current javadocs.
 #   - invoke ../publishjavadoc.sh while Cd'd in to that appropriate directory
 #
