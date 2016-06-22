@@ -15,6 +15,7 @@ import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Element;
 import com.tinkerpop.blueprints.Parameter;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
+import static org.jasonnet.logln.Logln.logln; import org.jasonnet.logln.Logln;
 
 /**
  * This class implements most of the glue needed to implement
