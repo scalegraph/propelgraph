@@ -26,25 +26,27 @@ public class LocatableGraphFactoryFactoryImpl {
 	static final String URLPREFIXD = LocatableGraphDirectory.SCHEME_PGGRAPHDIR+":";
 	static final LocatableGraphFactoryFactoryImpl lgffi = new LocatableGraphFactoryFactoryImpl();
 
-	/**
-	 * the value of the specified optional parameter of the 
-	 * specified url. Unlike the other method with this name, this 
-	 * one lets the caller pass in a default value to be returned if 
-	 * the parameter was not found. 
-	 * 
-	 * @author ccjason (11/9/2014)
-	 * 
-	 * @param strP 
-	 * @param urlPath 
-	 * @param defaultval 
-	 * 
-	 * @return String 
-	 */
-        public static final String parseForURLParameter( String strP, String urlPath, String defaultval ) {
+    /**
+     * the value of the specified optional parameter of the 
+     * specified url. Unlike the other method with this name, this 
+     * one lets the caller pass in a default value to be returned if 
+     * the parameter was not found.   If the parameter is specified 
+     * more than once in the url, the value of the last instance is 
+     * returned. 
+     * 
+     * @author ccjason (11/9/2014)
+     * 
+     * @param strP 
+     * @param urlPath 
+     * @param defaultval 
+     * 
+     * @return String 
+     */
+    public static final String parseForURLParameter( String strP, String urlPath, String defaultval ) {
 		//String strP = "&hostname=";
 		int idx0 = urlPath.indexOf('?');  if (idx0<0) return null;
-		int idx1 = urlPath.indexOf(strP,idx0);
-		if (idx1<0) return defaultval;
+		int idx1 = urlPath.lastIndexOf(strP,idx0);
+		if (idx1<idx0) return defaultval;
 		int idx2 = idx1+(strP.length());
 		int idx3 = urlPath.indexOf('&',idx2);
 		if (idx3<0) idx3 = urlPath.length();
@@ -53,7 +55,7 @@ public class LocatableGraphFactoryFactoryImpl {
 			retval = null;
 		}
 		return retval;
-	}
+    }
 	
 	/**
 	 * returns the value for the specified parameter encoded in the 
