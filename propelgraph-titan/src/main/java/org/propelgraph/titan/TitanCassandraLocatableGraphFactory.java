@@ -58,7 +58,7 @@ public class TitanCassandraLocatableGraphFactory implements LocatableGraphFactor
 			//log.setLevel()                                                                                                                                                                    
 			System.setProperty("org.slf4j.simpleLogger.log.com.thinkaurelius.titan.graphdb.query.QueryProcessor", "info");
 			return g;
-		} else if (store.equals("hbase")) {
+        } else if (store.equals("hbase")) {
 			String hostname = LocatableGraphFactoryFactoryImpl.parseForURLParameter("&hostname=", urlPath);
 			if ("localhost".equals(hostname)) hostname = null;
 			BaseConfiguration conf = new BaseConfiguration();
@@ -69,18 +69,14 @@ public class TitanCassandraLocatableGraphFactory implements LocatableGraphFactor
 			//g.createKeyIndex(idPropForId, Vertex.class);
 			//g.loadGraphML('data/onevertex.xml')                                                                                                                                       
 			return g;
-		} else if (store.equals("cassandra")) {
+        } else if (store.equals("cassandra")) {
 			String hostname = LocatableGraphFactoryFactoryImpl.parseForURLParameter("&hostname=", urlPath);
-			if ("localhost".equals(hostname)) hostname = null;
-			BaseConfiguration conf = new BaseConfiguration();
-			conf.setProperty("storage.backend","cassandra");
-			conf.setProperty("storage.hostname",hostname);
-			conf.setProperty("storage.tablename","titan"+graphname);
-			TitanGraph g = TitanFactory.open(conf);
-			//g.createKeyIndex(idPropForId, Vertex.class);
-			//g.loadGraphML('data/onevertex.xml')                                                                                                                                       
+			if ("localhost".equals(hostname)) hostname = "127.0.0.1";
+            if (null == hostname) hostname = "127.0.0.1";
+            TitanGraph g = TitanFactory.build().set("storage.backend","cassandra").set("storage.hostname",hostname).set("storage.cassandra.keyspace","pgcreategraph").open();
+            //TitanGraph g = TitanFactory.build().set("storage.backend","cassandrathrift").set("storage.hostname",hostname).open();
 			return g;
-		} else {
+        } else {
 			throw new RuntimeException("unknown store");
 		}
 	}

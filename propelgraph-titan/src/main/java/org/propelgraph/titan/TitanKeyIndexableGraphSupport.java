@@ -15,12 +15,16 @@ import com.thinkaurelius.titan.core.schema.TitanManagement; //Titan 0.5...
 /* $endif$ */
 import org.propelgraph.KeyIndexableGraphSupport;
 import java.util.Set;
-//import static org.jasonnet.logln.Logln.logln;
+import static org.jasonnet.logln.Logln.logln; import org.jasonnet.logln.Logln;
 
 public class TitanKeyIndexableGraphSupport implements KeyIndexableGraphSupport {
 
-
     TitanGraph gr;
+
+    static void logln(String ss) {	
+        //Logln.logln(ss,1); // comment out this line if you want the full featured logln
+    }  
+
 
     // default constructor
     public TitanKeyIndexableGraphSupport( ) {}
@@ -52,7 +56,7 @@ public class TitanKeyIndexableGraphSupport implements KeyIndexableGraphSupport {
 				return ; // it already exists
 			}
 		}
-		//logln("making index starting with the key");
+		//logln("making index starting with the key: "+key);
 		PropertyKey pk = mgmt.makePropertyKey(key).dataType(String.class).make();
 		mgmt.buildIndex( indexname,elementClass).addKey(pk).buildCompositeIndex();
 		mgmt.commit();
