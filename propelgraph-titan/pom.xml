@@ -3,13 +3,7 @@
   <parent>
     <groupId>org.propelgraph</groupId>
     <artifactId>all</artifactId>
-<!-- $if PGVERSION == 2.4.0 $
-    <version>2.4.0-SNAPSHOT</version>
-$elseif PGVERSION == 2.5.0 $ -->
     <version>2.5.0-SNAPSHOT</version>
-<!-- $elseif PGVERSION == 2.6.0 $
-    <version>2.6.0-SNAPSHOT</version>
-$endif $ -->
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -202,37 +196,19 @@ $endif $ -->
 	<artifactId>titan-berkeleyje</artifactId>
 
 <!-- I don't think they produced a BP 2.6.0 version of Titan -->
-<!-- $if PGVERSION == 2.4.0 $
-     <version>0.4.4</version>
-$elseif PGVERSION == 2.5.0 $ -->
     <version>0.5.4</version>
-<!-- $elseif PGVERSION == 2.6.0 $
-    <version>0.5.4</version>
-$endif $ -->
     </dependency>    
     <dependency>
 	<groupId>com.thinkaurelius.titan</groupId>
 	<artifactId>titan-hbase</artifactId>
 <!-- I don't think they produced a BP 2.6.0 version of Titan -->
-<!-- $if PGVERSION == 2.4.0 $
-     <version>0.4.4</version>
-$elseif PGVERSION == 2.5.0 $ -->
     <version>0.5.4</version>
-<!-- $elseif PGVERSION == 2.6.0 $
-    <version>0.5.4</version>
-$endif $ -->
     </dependency>    
     <dependency>
 	<groupId>com.thinkaurelius.titan</groupId>
 	<artifactId>titan-cassandra</artifactId>
 <!-- I don't think they produced a BP 2.6.0 version of Titan -->
-<!-- $if PGVERSION == 2.4.0 $
-     <version>0.4.4</version>
-$elseif PGVERSION == 2.5.0 $ -->
     <version>0.5.4</version>
-<!-- $elseif PGVERSION == 2.6.0 $
-    <version>0.5.4</version>
-$endif $ -->
     </dependency>    
 
     <!--dependency>
