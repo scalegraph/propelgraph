@@ -11,6 +11,7 @@
 package org.propelgraph.util;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.propelgraph.UnsupportedFActionException;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
+//import static org.jasonnet.logln.Logln.logln;
 
 /**
  * This class is copied from the SGAPISamples repo/project.
@@ -166,6 +168,25 @@ public class CreateGraph {
 	 */
 	public static final String GRAPH_SGTRANSAUTHORS = "sgtrans_authors";
 
+
+    private static String extraURLParameters(Map<String,String> mapParams) throws java.io.UnsupportedEncodingException {
+        String retval = "";
+        for (String key : mapParams.keySet()) {
+            if (key.startsWith("---")) {
+                // we aren't looking for flags.  We're looking for assigned parameters 
+            } else if (key.startsWith("--graphurl.")) {
+                if (key.equals("--hostname")) {
+                    // already handled elsewhere
+                } else {
+                    String key2 = key.substring(11);
+                    String value = mapParams.get(key);
+                    retval = retval + "&" + URLEncoder.encode(key2,"UTF-8") + "=" + URLEncoder.encode(value,"UTF-8") ;
+                }
+            }
+        }
+        return retval;
+    }
+
 	/**
 	 * returns a locatable graph urlstring for the specified 
 	 * graphtype.  This helper routine can be handy because graph 
@@ -182,6 +203,7 @@ public class CreateGraph {
 	 * @return String 
 	 */
 	private static String createGraphURL(String graphtype, String graphname, Map<String,String> mapParams ) throws IOException, InterruptedException {
+		String urlsuffix = extraURLParameters(mapParams);
 		if (GRAPH_GBASE.equals(graphtype)) {
 			return "pggraph:org.propelgraph.gbase.SGBPLocatableGraphFactory/?&graphname="+graphname+"&hostname="+(mapParams.get("--hostname")) ;
 		} else if (GRAPH_NEO4J.equals(graphtype)) {
@@ -189,11 +211,11 @@ public class CreateGraph {
 		} else if (GRAPH_DB2RDF.equals(graphtype)) {
 			throw new RuntimeException("do not yet support this type of constructor for db2rdf graph");
 		} else if (GRAPH_TITANHBASE.equals(graphtype)) {
-			return "pggraph:org.propelgraph.titan.TitanHBaseLocatableGraphFactory/?&graphname="+graphname+"&store=hbase&hostname="+(mapParams.get("--hostname"));
+			return "pggraph:org.propelgraph.titan.TitanHBaseLocatableGraphFactory/?&graphname="+graphname+"&store=hbase&hostname="+(mapParams.get("--hostname"))+urlsuffix;
 		} else if (GRAPH_TITANCASSANDRA.equals(graphtype)) {
-			return "pggraph:org.propelgraph.titan.TitanCassandraLocatableGraphFactory/?&graphname="+graphname+"&store=cassandra&hostname="+(mapParams.get("--hostname"));
+			return "pggraph:org.propelgraph.titan.TitanCassandraLocatableGraphFactory/?&graphname="+graphname+"&store=cassandra&hostname="+(mapParams.get("--hostname"))+urlsuffix;
 		} else if (GRAPH_TITANBERK.equals(graphtype)) {
-			return "pggraph:org.propelgraph.titan.TitanBerkeleyLocatableGraphFactory/?&graphname="+graphname+"&store=berkdb&dirpath=titanbstores";
+			return "pggraph:org.propelgraph.titan.TitanBerkeleyLocatableGraphFactory/?&graphname="+graphname+"&store=berkdb&dirpath=titanbstores"+urlsuffix;
 		} else if (GRAPH_TINKERMEM.equals(graphtype)) {
 			return "pggraph:org.propelgraph.tinkergraph.TinkerGraphLocatableGraphFactory/?&graphname=memory&tggraphtype=INMEMORY"; 
 		} else if (GRAPH_PROPELMEM.equals(graphtype)) {
